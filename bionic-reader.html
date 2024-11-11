@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bionic Reading Converter</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #app {
+      text-align: center;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      margin: 20px 0;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      resize: none;
+      outline: none;
+    }
+
+    .bionic-output {
+      white-space: pre-wrap;
+      text-align: left;
+      display: none;
+      font-size: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .bionic-word {
+      display: inline-block;
+    }
+
+    .bionic-word span:first-child {
+      font-weight: bold;
+    }
+
+    .controls {
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      color: #fff;
+      background-color: #007bff;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    #fullscreen-view.active {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #fff;
+      padding: 20px;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1>Bionic Reading Converter</h1>
+    <textarea id="inputText" placeholder="Paste your text here..."></textarea>
+    <div class="controls">
+      <button onclick="convertToBionic()">Convert to Bionic Reading</button>
+      <button onclick="toggleFullscreen()">Full Screen</button>
+      <button onclick="downloadPDF()">Download as PDF</button>
+    </div>
+    <div id="fullscreen-view" class="bionic-output"></div>
+  </div>
+
+  <!-- Importing jsPDF library for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script>
+    function convertToBionic() {
+      const text = document.getElementById("inputText").value;
+      const bionicText = text.split(" ").map(word => {
+        const half = Math.floor(word.length * 0.4); // Highlight the first 40% of the word
+        return `<span class="bionic-word"><span>${word.slice(0, half)}</span>${word.slice(half)}</span>`;
+      }).join(" ");
+      document.getElementById("fullscreen-view").innerHTML = bionicText;
+      document.getElementById("fullscreen-view").style.display = "block";
+    }
+
+    function toggleFullscreen() {
+      const view = document.getElementById("fullscreen-view");
+      view.classList.toggle("active");
+    }
+
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4' // Page size A4 (210x297mm)
+      });
+
+      // Define margins and settings
+      const marginLeft = 20;
+      const marginRight = 20;
+      const marginTop = 30;
+      const marginBottom = 20;
+      const lineHeight = 10;
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      // Font settings
+      pdf.setFont("Helvetica", "normal");
+      pdf.setFontSize(12);
+
+      // Prepare content and initial position
+      const bionicText = document.getElementById("fullscreen-view").innerText || "No text available";
+      const lines = pdf.splitTextToSize(bionicText, pageWidth - marginLeft - marginRight);
+      let y = marginTop;
+      let pageNumber = 1;
+
+      // Add content line-by-line
+      lines.forEach((line, index) => {
+        if (y + lineHeight > pageHeight - marginBottom) {
+          addPageNumber(pdf, pageNumber, pageWidth, pageHeight, marginBottom); // Add page number before adding a new page
+          pdf.addPage();
+          y = marginTop;
+          pageNumber += 1;
+        }
+        pdf.text(line, marginLeft, y);
+        y += lineHeight;
+      });
+
+      // Add page number on the last page
+      addPageNumber(pdf, pageNumber, pageWidth, pageHeight, marginBottom);
+
+      pdf.save("bionic-reading-custom.pdf");
+    }
+
+    // Helper function to add page numbers at the bottom center
+    function addPageNumber(pdf, pageNumber, pageWidth, pageHeight, marginBottom) {
+      pdf.setFontSize(10);
+      pdf.text(`Page ${pageNumber}`, pageWidth / 2, pageHeight - marginBottom / 2, { align: "center" });
+    }
+  </script>
+</body>
+</html>
