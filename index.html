@@ -1,328 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IT Journey Tools Hub</title>
-    <style>
-        /* Modern CSS Reset & Variables */
-        :root {
-            --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --primary-light: #93c5fd;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-600: #475569;
-            --gray-800: #1e293b;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        }
-
-        /* Modern Reset */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Base Styles */
-        body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-800);
-            line-height: 1.5;
-        }
-
-        /* Modern Header */
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: clamp(2rem, 8vw, 5rem) 1rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-            opacity: 0.6;
-            animation: rotate 60s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .header__content {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .header__title {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 800;
-            margin-bottom: 1rem;
-            letter-spacing: -0.025em;
-        }
-
-        .header__description {
-            font-size: clamp(1rem, 2vw, 1.25rem);
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Main Content */
-        .container {
-            max-width: 1200px;
-            margin: -3rem auto 4rem;
-            padding: 0 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
-            gap: 1.5rem;
-        }
-
-        /* Modern Card Design */
-        .tool-card {
-            background: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            position: relative;
-            isolation: isolate;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            border: 1px solid rgba(0,0,0,0.05);
-            overflow: hidden;
-        }
-
-        .tool-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .tool-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            opacity: 0;
-            z-index: -1;
-            transition: opacity 0.3s ease;
-        }
-
-        .tool-card:hover::before {
-            opacity: 0.05;
-        }
-
-        .tool-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--primary);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-            transform-origin: left;
-        }
-
-        .tool-card:hover::after {
-            transform: scaleX(1);
-        }
-
-        .tool-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--gray-50);
-            border-radius: 12px;
-            display: grid;
-            place-items: center;
-            font-size: 1.5rem;
-            transition: transform 0.3s ease;
-        }
-
-        .tool-card:hover .tool-icon {
-            transform: scale(1.1);
-        }
-
-        .tool-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: var(--primary-light);
-            color: var(--primary-dark);
-            border-radius: 1rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .tool-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--gray-800);
-            margin-bottom: 0.5rem;
-        }
-
-        .tool-description {
-            color: var(--gray-600);
-            font-size: 1rem;
-            flex-grow: 1;
-        }
-
-        .tool-stat {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--gray-600);
-            font-size: 0.875rem;
-        }
-
-        .tool-stat svg {
-            width: 1rem;
-            height: 1rem;
-            flex-shrink: 0;
-        }
-
-        /* Modern Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                margin-top: -2rem;
-            }
-            
-            .tool-card {
-                padding: 1.5rem;
-            }
-        }
-
-        /* Modern Loading Animation */
-        @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
-        }
-
-        .tool-card.loading {
-            animation: shimmer 2s infinite linear;
-            background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
-            background-size: 2000px 100%;
-        }
-    </style>
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <header class="header">
-        <div class="header__content">
-            <h1 class="header__title">IT Journey Tools</h1>
-            <p class="header__description">A collection of powerful tools to enhance your learning experience and boost productivity</p>
-        </div>
+      <div class="header__content">
+        <h1 class="header__title">My IT Journey Tools</h1>
+        <p class="header__description">
+          A collection of powerful tools to enhance your learning experience and
+          boost productivity
+        </p>
+      </div>
     </header>
 
     <main class="container">
-        <div class="tools-grid">
-            <div class="tool-card" data-href="/bionic-reader.html">
-                <div class="tool-icon">👁️</div>
-                <div>
-                    <span class="tool-badge">Accessibility</span>
-                    <h2 class="tool-title">Bionic Reading Converter</h2>
-                    <p class="tool-description">Transform text to enhance readability for people with dyslexia. Our bionic reading tool highlights key parts of words to improve reading speed and comprehension.</p>
-                </div>
-                <div class="tool-stat">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 6v6l4 2"/>
-                    </svg>
-                    <span>Process text in seconds</span>
-                </div>
-            </div>
-
-            <div class="tool-card" data-href="/code-formatter">
-                <div class="tool-icon">⌨️</div>
-                <div>
-                    <span class="tool-badge">Development</span>
-                    <h2 class="tool-title">Code Formatter</h2>
-                    <p class="tool-description">Clean and format your code automatically. Supports multiple programming languages with customizable formatting rules and syntax highlighting.</p>
-                </div>
-                <div class="tool-stat">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M8 3l9 9-9 9"/>
-                    </svg>
-                    <span>10+ languages supported</span>
-                </div>
-            </div>
-
-            <div class="tool-card" data-href="/contrast-checker">
-                <div class="tool-icon">🎨</div>
-                <div>
-                    <span class="tool-badge">Design</span>
-                    <h2 class="tool-title">Color Contrast Checker</h2>
-                    <p class="tool-description">Ensure your color combinations meet WCAG accessibility guidelines. Perfect for web designers and developers focusing on inclusive design.</p>
-                </div>
-                <div class="tool-stat">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                        <path d="M22 4L12 14.01l-3-3"/>
-                    </svg>
-                    <span>WCAG 2.1 compliant</span>
-                </div>
-            </div>
+      <div class="tools-grid">
+        <div class="tool-card" data-href="pages/bionic-reader.html">
+          <div class="tool-icon">👁️</div>
+          <div>
+            <span class="tool-badge">Accessibility</span>
+            <h2 class="tool-title">Bionic Reading Converter</h2>
+            <p class="tool-description">
+              Transform text to enhance readability for people with dyslexia.
+              Our bionic reading tool highlights key parts of words to improve
+              reading speed and comprehension.
+            </p>
+          </div>
+          <div class="tool-stat">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+            <span>Process text in seconds</span>
+          </div>
         </div>
+
+        <div class="tool-card" data-href="fh/flash-hero.html">
+          <div class="tool-icon">🗃️</div>
+          <div>
+            <span class="tool-badge">learning</span>
+            <h2 class="tool-title">Flash Hero</h2>
+            <p class="tool-description">
+              Interactive and fun way to learn with flash cards
+            </p>
+          </div>
+          <div class="tool-stat">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M8 3l9 9-9 9" />
+            </svg>
+            <span>10+ languages supported</span>
+          </div>
+        </div>
+
+        <div class="tool-card" data-href="pages/index.html">
+          <div class="tool-icon">🎨</div>
+          <div>
+            <span class="tool-badge">Design</span>
+            <h2 class="tool-title">Color Contrast Checker</h2>
+            <p class="tool-description">
+              Ensure your color combinations meet WCAG accessibility guidelines.
+              Perfect for web designers and developers focusing on inclusive
+              design.
+            </p>
+          </div>
+          <div class="tool-stat">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+              <path d="M22 4L12 14.01l-3-3" />
+            </svg>
+            <span>WCAG 2.1 compliant</span>
+          </div>
+        </div>
+      </div>
     </main>
 
-    <script>
-        // Modern vanilla JavaScript
-        document.addEventListener('DOMContentLoaded', () => {
-            // Add click handlers to cards
-            const cards = document.querySelectorAll('.tool-card');
-            cards.forEach(card => {
-                card.addEventListener('click', () => {
-                    const href = card.dataset.href;
-                    if (href) {
-                        window.location.href = href;
-                    }
-                });
-
-                // Add hover effect for touch devices
-                card.addEventListener('touchstart', () => {}, {passive: true});
-            });
-
-            // Add intersection observer for fade-in animation
-            const observer = new IntersectionObserver(
-                (entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.style.opacity = '1';
-                            entry.target.style.transform = 'translateY(0)';
-                        }
-                    });
-                },
-                { threshold: 0.1 }
-            );
-
-            cards.forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                observer.observe(card);
-            });
-        });
-    </script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>

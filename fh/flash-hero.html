@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flash Hero</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-container {
+            perspective: 2000px;
+            height: 400px;
+            margin: 2rem 0;
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal h2 {
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        #progress {
+            text-align: center;
+            margin: 1rem 0;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .card-face {
+            animation: slideIn 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .card-container {
+                height: 300px;
+            }
+
+            .modal-content {
+                min-width: 90%;
+                margin: 0 1rem;
+            }
+
+            .card-face {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flash Cards</h1>
+        
+        <div class="controls">
+            <button class="btn" onclick="showAddCardModal()">
+                <i class="fas fa-plus"></i> Add Card
+            </button>
+            <button class="btn" onclick="previousCard()">
+                <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <button class="btn" onclick="nextCard()">
+                Next <i class="fas fa-chevron-right"></i>
+            </button>
+            <button class="btn" onclick="shuffleCards()">
+                <i class="fas fa-random"></i> Shuffle
+            </button>
+            <div class="file-input-wrapper">
+                <button class="btn">
+                    <i class="fas fa-upload"></i> Import
+                </button>
+                <input type="file" id="fileInput" accept=".json,.csv" onchange="handleFileUpload(event)">
+            </div>
+            <button class="btn" onclick="exportCards('json')">
+                <i class="fas fa-download"></i> Export JSON
+            </button>
+            <button class="btn" onclick="exportCards('csv')">
+                <i class="fas fa-file-csv"></i> Export CSV
+            </button>
+        </div>
+
+        <div id="progress"></div>
+        <div class="progress-bar">
+            <div class="progress-bar-fill" style="width: 0%"></div>
+        </div>
+
+        <div class="card-container">
+            <div class="card" onclick="flipCard()">
+                <div class="card-face card-front"></div>
+                <div class="card-face card-back"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addCardModal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Card</h2>
+            <div class="input-group">
+                <label>Front</label>
+                <input type="text" id="frontText" placeholder="Enter front text">
+            </div>
+            <div class="input-group">
+                <label>Back</label>
+                <input type="text" id="backText" placeholder="Enter back text">
+            </div>
+            <div class="controls">
+                <button class="btn" onclick="addCard()">
+                    <i class="fas fa-plus"></i> Add
+                </button>
+                <button class="btn" onclick="closeModal()" style="background: #64748b;">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cards = [];
+        let currentCardIndex = 0;
+
+        function updateCard() {
+            if (cards.length === 0) {
+                document.querySelector('.card-front').innerHTML = '<div style="text-align: center;"><i class="fas fa-plus-circle" style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary);"></i><br>Add some cards to begin!</div>';
+                document.querySelector('.card-back').textContent = '';
+                document.getElementById('progress').textContent = 'No cards';
+                document.querySelector('.progress-bar-fill').style.width = '0%';
+                return;
+            }
+
+            const card = cards[currentCardIndex];
+            document.querySelector('.card-front').textContent = card.front;
+            document.querySelector('.card-back').textContent = card.back;
+            document.getElementById('progress').textContent = 
+                `Card ${currentCardIndex + 1} of ${cards.length}`;
+            document.querySelector('.progress-bar-fill').style.width = 
+                `${((currentCardIndex + 1) / cards.length) * 100}%`;
+        }
+
+        function flipCard() {
+            document.querySelector('.card').classList.toggle('flipped');
+        }
+
+        function showAddCardModal() {
+            document.getElementById('addCardModal').style.display = 'block';
+            document.getElementById('frontText').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('addCardModal').style.display = 'none';
+            document.getElementById('frontText').value = '';
+            document.getElementById('backText').value = '';
+        }
+
+        function addCard() {
+            const front = document.getElementById('frontText').value.trim();
+            const back = document.getElementById('backText').value.trim();
+            
+            if (front && back) {
+                cards.push({ front, back });
+                closeModal();
+                updateCard();
+            }
+        }
+
+        function nextCard() {
+            if (cards.length === 0) return;
+            currentCardIndex = (currentCardIndex + 1) % cards.length;
+            document.querySelector('.card').classList.remove('flipped');
+            updateCard();
+        }
+
+        function previousCard() {
+            if (cards.length === 0) return;
+            currentCardIndex = (currentCardIndex - 1 + cards.length) % cards.length;
+            document.querySelector('.card').classList.remove('flipped');
+            updateCard();
+        }
+
+        function shuffleCards() {
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            currentCardIndex = 0;
+            updateCard();
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    if (file.name.endsWith('.json')) {
+                        cards = JSON.parse(e.target.result);
+                    } else if (file.name.endsWith('.csv')) {
+                        const text = e.target.result;
+                        const rows = text.split('\n');
+                        cards = rows
+                            .filter(row => row.trim())
+                            .map(row => {
+                                const [front, back] = row.split(',').map(cell => 
+                                    cell.trim().replace(/(^"|"$)/g, ''));
+                                return { front, back };
+                            });
+                    }
+                    currentCardIndex = 0;
+                    updateCard();
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+
+            if (file.name.endsWith('.json')) {
+                reader.readAsText(file);
+            } else if (file.name.endsWith('.csv')) {
+                reader.readAsText(file);
+            }
+        }
+
+        function exportCards(format) {
+            if (cards.length === 0) {
+                alert('No cards to export!');
+                return;
+            }
+
+            let content;
+            let filename;
+            let type;
+
+            if (format === 'json') {
+                content = JSON.stringify(cards, null, 2);
+                filename = 'flashcards.json';
+                type = 'application/json';
+            } else {
+                content = cards
+                    .map(card => `"${card.front}","${card.back}"`)
+                    .join('\n');
+                filename = 'flashcards.csv';
+                type = 'text/csv';
+            }
+
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Handle keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') previousCard();
+            if (e.key === 'ArrowRight') nextCard();
+            if (e.key === ' ') flipCard();
+        });
+
+        updateCard();
+    </script>
+</body>
+</html>
