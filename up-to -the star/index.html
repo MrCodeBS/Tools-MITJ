@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Up to the Star</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>Five-Point Star Game</h1>
+        
+        <div class="instructions-toggle" onclick="toggleInstructions()">Show Game Rules</div>
+        
+        <div class="instructions" id="instructions">
+            <h3>Rules:</h3>
+            <ul>
+                <li>Two players take turns, each starting with 6 stones.</li>
+                <li>The star has 5 points (numbered 1-5), and point 6 is the center of the star.</li>
+                <li>Players roll a die on their turn.</li>
+                <li>If the rolled number corresponds to an empty position, the player places their stone there.</li>
+                <li>If the position is already occupied by any stone (their own or opponent's), the player must take that stone and add it to their total.</li>
+                <li>If a player rolls a 6, they can place a stone in the center spot (position 6). The center spot can have a maximum of 11 stones at the same time.</li>
+                <li>The first player to place all their stones wins!</li>
+            </ul>
+        </div>
+        
+        <div class="game-board">
+            <div class="star"></div>
+            <!-- Points will be added by JavaScript -->
+        </div>
+        
+        <div class="controls">
+            <div class="player-info">
+                <div class="player player1 active-player">
+                    <h3>Player 1</h3>
+                    <p>Stones left: <span id="player1-stones">6</span></p>
+                </div>
+                <div class="player player2">
+                    <h3>Player 2</h3>
+                    <p>Stones left: <span id="player2-stones">6</span></p>
+                </div>
+            </div>
+            
+            <div class="dice-container">
+                <div class="dice" id="dice">?</div>
+            </div>
+            
+            <button class="roll-btn" id="roll-btn">Roll Dice</button>
+            
+            <div class="status" id="status">Player 1's turn. Roll the dice!</div>
+        </div>
+        
+        <div id="center-counter">Center Stones: 0</div>
+    </div>
+    
+    <div class="modal" id="win-modal">
+        <div class="modal-content">
+            <h2 id="winner-text">Player X Wins!</h2>
+            <p>Congratulations!</p>
+            <button onclick="resetGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
