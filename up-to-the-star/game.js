@@ -18,7 +18,7 @@
 
         // Point positions (in percentages relative to the board)
         const pointPositions = {
-            1: { top: '0%', left: '42.5%' },      // Top point
+            1: { top: '-5%', left: '42.5%' },      // Top point
             2: { top: '28%', left: '90%' },     // Right top
             3: { top: '82%', left: '70%' },     // Right bottom
             4: { top: '82%', left: '15%' },     // Left bottom
