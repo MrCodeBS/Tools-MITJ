@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧮 Formelsammlung-Rechner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 1001;
+            background: white;
+            border-radius: 8px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        .menu-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -350px;
+            width: 320px;
+            height: 100vh;
+            background: white;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 80px 20px 20px;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 999;
+        }
+
+        .sidebar-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .category {
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            font-weight: bold;
+            color: #667eea;
+            padding: 10px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-title:hover {
+            background: #e0e8ff;
+        }
+
+        .formula-list {
+            display: none;
+            padding-left: 10px;
+        }
+
+        .formula-list.open {
+            display: block;
+        }
+
+        .formula-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .formula-item:hover {
+            background: #f0f4ff;
+            color: #667eea;
+        }
+
+        .formula-item.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .info-banner {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-banner p {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .calculator-section {
+            display: none;
+        }
+
+        .calculator-section.active {
+            display: block;
+        }
+
+        .calculator-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .formula-display {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-family: 'Times New Roman', serif;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #444;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .result-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-box:active {
+            transform: scale(0.98);
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .copy-hint {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 8px;
+        }
+
+        .copied-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+
+        .copied-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .welcome-screen {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .welcome-screen h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .welcome-screen p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .sidebar {
+                width: 280px;
+                left: -300px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .stats {
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <div class="sidebar">
+        <div class="category">
+            <div class="category-title" onclick="toggleCategory(this)">
+                📐 Geometrie <span>▼</span>
+            </div>
+            <div class="formula-list">
+                <div class="formula-item" onclick="showCalculator('rechteck-flaeche')">Rechteck - Fläche</div>
+                <div class="formula-item" onclick="showCalculator('rechteck-umfang')">Rechteck - Umfang</div>
+                <div class="formula-item" onclick="showCalculator('kreis-flaeche')">Kreis - Fläche</div>
+                <div class="formula-item" onclick="showCalculator('kreis-umfang')">Kreis - Umfang</div>
+                <div class="formula-item" onclick="showCalculator('dreieck-flaeche')">Dreieck - Fläche</div>
+                <div class="formula-item" onclick="showCalculator('trapez-flaeche')">Trapez - Fläche</div>
+                <div class="formula-item" onclick="showCalculator('pythagoras')">Satz des Pythagoras</div>
+            </div>
+        </div>
+
+        <div class="category">
+            <div class="category-title" onclick="toggleCategory(this)">
+                📦 Körper <span>▼</span>
+            </div>
+            <div class="formula-list">
+                <div class="formula-item" onclick="showCalculator('quader-volumen')">Quader - Volumen</div>
+                <div class="formula-item" onclick="showCalculator('quader-oberflaeche')">Quader - Oberfläche</div>
+                <div class="formula-item" onclick="showCalculator('zylinder-volumen')">Zylinder - Volumen</div>
+                <div class="formula-item" onclick="showCalculator('zylinder-oberflaeche')">Zylinder - Oberfläche</div>
+                <div class="formula-item" onclick="showCalculator('kugel-volumen')">Kugel - Volumen</div>
+                <div class="formula-item" onclick="showCalculator('kugel-oberflaeche')">Kugel - Oberfläche</div>
+                <div class="formula-item" onclick="showCalculator('kegel-volumen')">Kegel - Volumen</div>
+                <div class="formula-item" onclick="showCalculator('pyramide-volumen')">Pyramide - Volumen</div>
+            </div>
+        </div>
+
+        <div class="category">
+            <div class="category-title" onclick="toggleCategory(this)">
+                ⚡ Physik - Mechanik <span>▼</span>
+            </div>
+            <div class="formula-list">
+                <div class="formula-item" onclick="showCalculator('geschwindigkeit')">Geschwindigkeit</div>
+                <div class="formula-item" onclick="showCalculator('beschleunigung')">Beschleunigung</div>
+                <div class="formula-item" onclick="showCalculator('kraft')">Kraft (F = m · a)</div>
+                <div class="formula-item" onclick="showCalculator('arbeit')">Arbeit (W = F · s)</div>
+                <div class="formula-item" onclick="showCalculator('leistung')">Leistung (P = W / t)</div>
+                <div class="formula-item" onclick="showCalculator('dichte')">Dichte (ρ = m / V)</div>
+                <div class="formula-item" onclick="showCalculator('druck')">Druck (p = F / A)</div>
+            </div>
+        </div>
+
+        <div class="category">
+            <div class="category-title" onclick="toggleCategory(this)">
+                🔌 Physik - Elektrizität <span>▼</span>
+            </div>
+            <div class="formula-list">
+                <div class="formula-item" onclick="showCalculator('ohm')">Ohmsches Gesetz</div>
+                <div class="formula-item" onclick="showCalculator('elektrische-leistung')">Elektrische Leistung</div>
+                <div class="formula-item" onclick="showCalculator('elektrische-arbeit')">Elektrische Arbeit</div>
+                <div class="formula-item" onclick="showCalculator('widerstand-reihe')">Reihenschaltung R</div>
+                <div class="formula-item" onclick="showCalculator('widerstand-parallel')">Parallelschaltung R</div>
+            </div>
+        </div>
+
+        <div class="category">
+            <div class="category-title" onclick="toggleCategory(this)">
+                📊 Mathematik <span>▼</span>
+            </div>
+            <div class="formula-list">
+                <div class="formula-item" onclick="showCalculator('prozent')">Prozentrechnung</div>
+                <div class="formula-item" onclick="showCalculator('dreisatz')">Dreisatz</div>
+                <div class="formula-item" onclick="showCalculator('mittelwert')">Mittelwert</div>
+                <div class="formula-item" onclick="showCalculator('pq-formel')">pq-Formel</div>
+                <div class="formula-item" onclick="showCalculator('quadratische-gleichung')">abc-Formel</div>
+            </div>
+        </div>
+
+        <div class="category">
+            <div class="category-title" onclick="toggleCategory(this)">
+                💰 Finanzen <span>▼</span>
+            </div>
+            <div class="formula-list">
+                <div class="formula-item" onclick="showCalculator('zinsen')">Einfache Zinsen</div>
+                <div class="formula-item" onclick="showCalculator('zinseszins')">Zinseszins</div>
+                <div class="formula-item" onclick="showCalculator('mwst')">Mehrwertsteuer</div>
+                <div class="formula-item" onclick="showCalculator('rabatt')">Rabatt berechnen</div>
+            </div>
+        </div>
+
+        <div class="category">
+            <div class="category-title" onclick="toggleCategory(this)">
+                🔄 Umrechnungen <span>▼</span>
+            </div>
+            <div class="formula-list">
+                <div class="formula-item" onclick="showCalculator('celsius-fahrenheit')">Celsius ↔ Fahrenheit</div>
+                <div class="formula-item" onclick="showCalculator('km-meilen')">Kilometer ↔ Meilen</div>
+                <div class="formula-item" onclick="showCalculator('kg-pfund')">Kilogramm ↔ Pfund</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🧮 Formelsammlung-Rechner</h1>
+        </header>
+
+        <div class="main-content">
+            <div class="info-banner">
+                <p><strong>Eingabe (Komma oder Punkt)</strong> · Ergebnis – rechnet sofort · Klick = kopieren · Eingaben werden im Browser gespeichert</p>
+            </div>
+
+            <!-- Welcome Screen -->
+            <div class="calculator-section active" id="welcome">
+                <div class="welcome-screen">
+                    <h2>Willkommen!</h2>
+                    <p>Wähle eine Formel aus dem Menü (☰), um sofort loszurechnen. Alle Eingaben werden automatisch gespeichert.</p>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-number">40+</div>
+                            <div class="stat-label">Formeln</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">7</div>
+                            <div class="stat-label">Kategorien</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">∞</div>
+                            <div class="stat-label">Berechnungen</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Geometrie -->
+            <div class="calculator-section" id="rechteck-flaeche">
+                <h2 class="calculator-title">Rechteck - Fläche</h2>
+                <div class="formula-display">A = a · b</div>
+                <div class="input-group">
+                    <label>Länge a (Einheit)</label>
+                    <input type="text" id="rechteck-a" oninput="calculateRechteckFlaeche()" placeholder="z.B. 5">
+                </div>
+                <div class="input-group">
+                    <label>Breite b (Einheit)</label>
+                    <input type="text" id="rechteck-b" oninput="calculateRechteckFlaeche()" placeholder="z.B. 3">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Fläche A</div>
+                    <div class="result-value" id="rechteck-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="rechteck-umfang">
+                <h2 class="calculator-title">Rechteck - Umfang</h2>
+                <div class="formula-display">U = 2 · (a + b)</div>
+                <div class="input-group">
+                    <label>Länge a (Einheit)</label>
+                    <input type="text" id="rechteck-umfang-a" oninput="calculateRechteckUmfang()" placeholder="z.B. 5">
+                </div>
+                <div class="input-group">
+                    <label>Breite b (Einheit)</label>
+                    <input type="text" id="rechteck-umfang-b" oninput="calculateRechteckUmfang()" placeholder="z.B. 3">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Umfang U</div>
+                    <div class="result-value" id="rechteck-umfang-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="kreis-flaeche">
+                <h2 class="calculator-title">Kreis - Fläche</h2>
+                <div class="formula-display">A = π · r²</div>
+                <div class="input-group">
+                    <label>Radius r (Einheit)</label>
+                    <input type="text" id="kreis-r" oninput="calculateKreisFlaeche()" placeholder="z.B. 5">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Fläche A</div>
+                    <div class="result-value" id="kreis-flaeche-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="kreis-umfang">
+                <h2 class="calculator-title">Kreis - Umfang</h2>
+                <div class="formula-display">U = 2 · π · r</div>
+                <div class="input-group">
+                    <label>Radius r (Einheit)</label>
+                    <input type="text" id="kreis-umfang-r" oninput="calculateKreisUmfang()" placeholder="z.B. 5">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Umfang U</div>
+                    <div class="result-value" id="kreis-umfang-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="dreieck-flaeche">
+                <h2 class="calculator-title">Dreieck - Fläche</h2>
+                <div class="formula-display">A = ½ · g · h</div>
+                <div class="input-group">
+                    <label>Grundseite g (Einheit)</label>
+                    <input type="text" id="dreieck-g" oninput="calculateDreieckFlaeche()" placeholder="z.B. 6">
+                </div>
+                <div class="input-group">
+                    <label>Höhe h (Einheit)</label>
+                    <input type="text" id="dreieck-h" oninput="calculateDreieckFlaeche()" placeholder="z.B. 4">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Fläche A</div>
+                    <div class="result-value" id="dreieck-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="trapez-flaeche">
+                <h2 class="calculator-title">Trapez - Fläche</h2>
+                <div class="formula-display">A = ½ · (a + c) · h</div>
+                <div class="input-group">
+                    <label>Seite a (Einheit)</label>
+                    <input type="text" id="trapez-a" oninput="calculateTrapezFlaeche()" placeholder="z.B. 8">
+                </div>
+                <div class="input-group">
+                    <label>Seite c (Einheit)</label>
+                    <input type="text" id="trapez-c" oninput="calculateTrapezFlaeche()" placeholder="z.B. 4">
+                </div>
+                <div class="input-group">
+                    <label>Höhe h (Einheit)</label>
+                    <input type="text" id="trapez-h" oninput="calculateTrapezFlaeche()" placeholder="z.B. 5">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Fläche A</div>
+                    <div class="result-value" id="trapez-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="pythagoras">
+                <h2 class="calculator-title">Satz des Pythagoras</h2>
+                <div class="formula-display">c² = a² + b²  →  c = √(a² + b²)</div>
+                <div class="input-group">
+                    <label>Kathete a (Einheit)</label>
+                    <input type="text" id="pyth-a" oninput="calculatePythagoras()" placeholder="z.B. 3">
+                </div>
+                <div class="input-group">
+                    <label>Kathete b (Einheit)</label>
+                    <input type="text" id="pyth-b" oninput="calculatePythagoras()" placeholder="z.B. 4">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Hypotenuse c</div>
+                    <div class="result-value" id="pyth-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <!-- Körper -->
+            <div class="calculator-section" id="quader-volumen">
+                <h2 class="calculator-title">Quader - Volumen</h2>
+                <div class="formula-display">V = a · b · c</div>
+                <div class="input-group">
+                    <label>Länge a (Einheit)</label>
+                    <input type="text" id="quader-a" oninput="calculateQuaderVolumen()" placeholder="z.B. 5">
+                </div>
+                <div class="input-group">
+                    <label>Breite b (Einheit)</label>
+                    <input type="text" id="quader-b" oninput="calculateQuaderVolumen()" placeholder="z.B. 3">
+                </div>
+                <div class="input-group">
+                    <label>Höhe c (Einheit)</label>
+                    <input type="text" id="quader-c" oninput="calculateQuaderVolumen()" placeholder="z.B. 2">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Volumen V</div>
+                    <div class="result-value" id="quader-vol-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="quader-oberflaeche">
+                <h2 class="calculator-title">Quader - Oberfläche</h2>
+                <div class="formula-display">O = 2 · (ab + ac + bc)</div>
+                <div class="input-group">
+                    <label>Länge a (Einheit)</label>
+                    <input type="text" id="quader-ob-a" oninput="calculateQuaderOberflaeche()" placeholder="z.B. 5">
+                </div>
+                <div class="input-group">
+                    <label>Breite b (Einheit)</label>
+                    <input type="text" id="quader-ob-b" oninput="calculateQuaderOberflaeche()" placeholder="z.B. 3">
+                </div>
+                <div class="input-group">
+                    <label>Höhe c (Einheit)</label>
+                    <input type="text" id="quader-ob-c" oninput="calculateQuaderOberflaeche()" placeholder="z.B. 2">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Oberfläche O</div>
+                    <div class="result-value" id="quader-ob-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="zylinder-volumen">
+                <h2 class="calculator-title">Zylinder - Volumen</h2>
+                <div class="formula-display">V = π · r² · h</div>
+                <div class="input-group">
+                    <label>Radius r (Einheit)</label>
+                    <input type="text" id="zyl-r" oninput="calculateZylinderVolumen()" placeholder="z.B. 3">
+                </div>
+                <div class="input-group">
+                    <label>Höhe h (Einheit)</label>
+                    <input type="text" id="zyl-h" oninput="calculateZylinderVolumen()" placeholder="z.B. 10">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Volumen V</div>
+                    <div class="result-value" id="zyl-vol-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="zylinder-oberflaeche">
+                <h2 class="calculator-title">Zylinder - Oberfläche</h2>
+                <div class="formula-display">O = 2 · π · r · (r + h)</div>
+                <div class="input-group">
+                    <label>Radius r (Einheit)</label>
+                    <input type="text" id="zyl-ob-r" oninput="calculateZylinderOberflaeche()" placeholder="z.B. 3">
+                </div>
+                <div class="input-group">
+                    <label>Höhe h (Einheit)</label>
+                    <input type="text" id="zyl-ob-h" oninput="calculateZylinderOberflaeche()" placeholder="z.B. 10">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Oberfläche O</div>
+                    <div class="result-value" id="zyl-ob-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="kugel-volumen">
+                <h2 class="calculator-title">Kugel - Volumen</h2>
+                <div class="formula-display">V = 4/3 · π · r³</div>
+                <div class="input-group">
+                    <label>Radius r (Einheit)</label>
+                    <input type="text" id="kugel-r" oninput="calculateKugelVolumen()" placeholder="z.B. 5">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Volumen V</div>
+                    <div class="result-value" id="kugel-vol-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="kugel-oberflaeche">
+                <h2 class="calculator-title">Kugel - Oberfläche</h2>
+                <div class="formula-display">O = 4 · π · r²</div>
+                <div class="input-group">
+                    <label>Radius r (Einheit)</label>
+                    <input type="text" id="kugel-ob-r" oninput="calculateKugelOberflaeche()" placeholder="z.B. 5">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Oberfläche O</div>
+                    <div class="result-value" id="kugel-ob-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="kegel-volumen">
+                <h2 class="calculator-title">Kegel - Volumen</h2>
+                <div class="formula-display">V = 1/3 · π · r² · h</div>
+                <div class="input-group">
+                    <label>Radius r (Einheit)</label>
+                    <input type="text" id="kegel-r" oninput="calculateKegelVolumen()" placeholder="z.B. 3">
+                </div>
+                <div class="input-group">
+                    <label>Höhe h (Einheit)</label>
+                    <input type="text" id="kegel-h" oninput="calculateKegelVolumen()" placeholder="z.B. 7">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Volumen V</div>
+                    <div class="result-value" id="kegel-vol-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="pyramide-volumen">
+                <h2 class="calculator-title">Pyramide - Volumen</h2>
+                <div class="formula-display">V = 1/3 · G · h</div>
+                <div class="input-group">
+                    <label>Grundfläche G (Einheit²)</label>
+                    <input type="text" id="pyramide-g" oninput="calculatePyramideVolumen()" placeholder="z.B. 25">
+                </div>
+                <div class="input-group">
+                    <label>Höhe h (Einheit)</label>
+                    <input type="text" id="pyramide-h" oninput="calculatePyramideVolumen()" placeholder="z.B. 6">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Volumen V</div>
+                    <div class="result-value" id="pyramide-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <!-- Physik Mechanik -->
+            <div class="calculator-section" id="geschwindigkeit">
+                <h2 class="calculator-title">Geschwindigkeit</h2>
+                <div class="formula-display">v = s / t</div>
+                <div class="input-group">
+                    <label>Strecke s (m)</label>
+                    <input type="text" id="gesch-s" oninput="calculateGeschwindigkeit()" placeholder="z.B. 100">
+                </div>
+                <div class="input-group">
+                    <label>Zeit t (s)</label>
+                    <input type="text" id="gesch-t" oninput="calculateGeschwindigkeit()" placeholder="z.B. 10">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Geschwindigkeit v (m/s)</div>
+                    <div class="result-value" id="gesch-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="beschleunigung">
+                <h2 class="calculator-title">Beschleunigung</h2>
+                <div class="formula-display">a = Δv / Δt</div>
+                <div class="input-group">
+                    <label>Geschwindigkeitsänderung Δv (m/s)</label>
+                    <input type="text" id="beschl-v" oninput="calculateBeschleunigung()" placeholder="z.B. 20">
+                </div>
+                <div class="input-group">
+                    <label>Zeitänderung Δt (s)</label>
+                    <input type="text" id="beschl-t" oninput="calculateBeschleunigung()" placeholder="z.B. 5">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Beschleunigung a (m/s²)</div>
+                    <div class="result-value" id="beschl-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="kraft">
+                <h2 class="calculator-title">Kraft</h2>
+                <div class="formula-display">F = m · a</div>
+                <div class="input-group">
+                    <label>Masse m (kg)</label>
+                    <input type="text" id="kraft-m" oninput="calculateKraft()" placeholder="z.B. 10">
+                </div>
+                <div class="input-group">
+                    <label>Beschleunigung a (m/s²)</label>
+                    <input type="text" id="kraft-a" oninput="calculateKraft()" placeholder="z.B. 9.81">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Kraft F (N)</div>
+                    <div class="result-value" id="kraft-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="arbeit">
+                <h2 class="calculator-title">Arbeit</h2>
+                <div class="formula-display">W = F · s</div>
+                <div class="input-group">
+                    <label>Kraft F (N)</label>
+                    <input type="text" id="arbeit-f" oninput="calculateArbeit()" placeholder="z.B. 50">
+                </div>
+                <div class="input-group">
+                    <label>Strecke s (m)</label>
+                    <input type="text" id="arbeit-s" oninput="calculateArbeit()" placeholder="z.B. 10">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Arbeit W (J)</div>
+                    <div class="result-value" id="arbeit-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="leistung">
+                <h2 class="calculator-title">Leistung</h2>
+                <div class="formula-display">P = W / t</div>
+                <div class="input-group">
+                    <label>Arbeit W (J)</label>
+                    <input type="text" id="leistung-w" oninput="calculateLeistung()" placeholder="z.B. 500">
+                </div>
+                <div class="input-group">
+                    <label>Zeit t (s)</label>
+                    <input type="text" id="leistung-t" oninput="calculateLeistung()" placeholder="z.B. 10">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Leistung P (W)</div>
+                    <div class="result-value" id="leistung-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="dichte">
+                <h2 class="calculator-title">Dichte</h2>
+                <div class="formula-display">ρ = m / V</div>
+                <div class="input-group">
+                    <label>Masse m (kg)</label>
+                    <input type="text" id="dichte-m" oninput="calculateDichte()" placeholder="z.B. 2.7">
+                </div>
+                <div class="input-group">
+                    <label>Volumen V (m³)</label>
+                    <input type="text" id="dichte-v" oninput="calculateDichte()" placeholder="z.B. 0.001">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Dichte ρ (kg/m³)</div>
+                    <div class="result-value" id="dichte-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="druck">
+                <h2 class="calculator-title">Druck</h2>
+                <div class="formula-display">p = F / A</div>
+                <div class="input-group">
+                    <label>Kraft F (N)</label>
+                    <input type="text" id="druck-f" oninput="calculateDruck()" placeholder="z.B. 100">
+                </div>
+                <div class="input-group">
+                    <label>Fläche A (m²)</label>
+                    <input type="text" id="druck-a" oninput="calculateDruck()" placeholder="z.B. 0.01">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Druck p (Pa)</div>
+                    <div class="result-value" id="druck-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <!-- Elektrizität -->
+            <div class="calculator-section" id="ohm">
+                <h2 class="calculator-title">Ohmsches Gesetz</h2>
+                <div class="formula-display">U = R · I</div>
+                <div class="input-group">
+                    <label>Widerstand R (Ω)</label>
+                    <input type="text" id="ohm-r" oninput="calculateOhm()" placeholder="z.B. 100">
+                </div>
+                <div class="input-group">
+                    <label>Stromstärke I (A)</label>
+                    <input type="text" id="ohm-i" oninput="calculateOhm()" placeholder="z.B. 0.5">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Spannung U (V)</div>
+                    <div class="result-value" id="ohm-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="elektrische-leistung">
+                <h2 class="calculator-title">Elektrische Leistung</h2>
+                <div class="formula-display">P = U · I</div>
+                <div class="input-group">
+                    <label>Spannung U (V)</label>
+                    <input type="text" id="el-leist-u" oninput="calculateElLeistung()" placeholder="z.B. 230">
+                </div>
+                <div class="input-group">
+                    <label>Stromstärke I (A)</label>
+                    <input type="text" id="el-leist-i" oninput="calculateElLeistung()" placeholder="z.B. 2">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Leistung P (W)</div>
+                    <div class="result-value" id="el-leist-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="elektrische-arbeit">
+                <h2 class="calculator-title">Elektrische Arbeit</h2>
+                <div class="formula-display">W = P · t</div>
+                <div class="input-group">
+                    <label>Leistung P (W)</label>
+                    <input type="text" id="el-arbeit-p" oninput="calculateElArbeit()" placeholder="z.B. 100">
+                </div>
+                <div class="input-group">
+                    <label>Zeit t (h)</label>
+                    <input type="text" id="el-arbeit-t" oninput="calculateElArbeit()" placeholder="z.B. 5">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Arbeit W (Wh / kWh)</div>
+                    <div class="result-value" id="el-arbeit-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="widerstand-reihe">
+                <h2 class="calculator-title">Reihenschaltung - Gesamtwiderstand</h2>
+                <div class="formula-display">R_ges = R₁ + R₂ + R₃ + ...</div>
+                <div class="input-group">
+                    <label>Widerstände (kommagetrennt, in Ω)</label>
+                    <input type="text" id="reihe-r" oninput="calculateReihe()" placeholder="z.B. 100, 200, 300">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Gesamtwiderstand R_ges (Ω)</div>
+                    <div class="result-value" id="reihe-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="widerstand-parallel">
+                <h2 class="calculator-title">Parallelschaltung - Gesamtwiderstand</h2>
+                <div class="formula-display">1/R_ges = 1/R₁ + 1/R₂ + 1/R₃ + ...</div>
+                <div class="input-group">
+                    <label>Widerstände (kommagetrennt, in Ω)</label>
+                    <input type="text" id="parallel-r" oninput="calculateParallel()" placeholder="z.B. 100, 200, 300">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Gesamtwiderstand R_ges (Ω)</div>
+                    <div class="result-value" id="parallel-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <!-- Mathematik -->
+            <div class="calculator-section" id="prozent">
+                <h2 class="calculator-title">Prozentrechnung</h2>
+                <div class="formula-display">Prozentwert = Grundwert · (Prozentsatz / 100)</div>
+                <div class="input-group">
+                    <label>Grundwert</label>
+                    <input type="text" id="prozent-g" oninput="calculateProzent()" placeholder="z.B. 200">
+                </div>
+                <div class="input-group">
+                    <label>Prozentsatz (%)</label>
+                    <input type="text" id="prozent-p" oninput="calculateProzent()" placeholder="z.B. 15">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Prozentwert</div>
+                    <div class="result-value" id="prozent-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="dreisatz">
+                <h2 class="calculator-title">Dreisatz</h2>
+                <div class="formula-display">a : b = c : x  →  x = (b · c) / a</div>
+                <div class="input-group">
+                    <label>Wert a</label>
+                    <input type="text" id="drei-a" oninput="calculateDreisatz()" placeholder="z.B. 5">
+                </div>
+                <div class="input-group">
+                    <label>Wert b</label>
+                    <input type="text" id="drei-b" oninput="calculateDreisatz()" placeholder="z.B. 100">
+                </div>
+                <div class="input-group">
+                    <label>Wert c</label>
+                    <input type="text" id="drei-c" oninput="calculateDreisatz()" placeholder="z.B. 8">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Ergebnis x</div>
+                    <div class="result-value" id="drei-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="mittelwert">
+                <h2 class="calculator-title">Mittelwert (Durchschnitt)</h2>
+                <div class="formula-display">x̄ = (x₁ + x₂ + ... + xₙ) / n</div>
+                <div class="input-group">
+                    <label>Werte (kommagetrennt)</label>
+                    <input type="text" id="mittel-werte" oninput="calculateMittelwert()" placeholder="z.B. 10, 20, 30, 40">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Mittelwert x̄</div>
+                    <div class="result-value" id="mittel-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="pq-formel">
+                <h2 class="calculator-title">pq-Formel</h2>
+                <div class="formula-display">x² + px + q = 0  →  x₁,₂ = -p/2 ± √((p/2)² - q)</div>
+                <div class="input-group">
+                    <label>p</label>
+                    <input type="text" id="pq-p" oninput="calculatePQ()" placeholder="z.B. -5">
+                </div>
+                <div class="input-group">
+                    <label>q</label>
+                    <input type="text" id="pq-q" oninput="calculatePQ()" placeholder="z.B. 6">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Lösungen x₁, x₂</div>
+                    <div class="result-value" id="pq-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="quadratische-gleichung">
+                <h2 class="calculator-title">abc-Formel (Mitternachtsformel)</h2>
+                <div class="formula-display">ax² + bx + c = 0  →  x₁,₂ = (-b ± √(b² - 4ac)) / 2a</div>
+                <div class="input-group">
+                    <label>a</label>
+                    <input type="text" id="abc-a" oninput="calculateABC()" placeholder="z.B. 1">
+                </div>
+                <div class="input-group">
+                    <label>b</label>
+                    <input type="text" id="abc-b" oninput="calculateABC()" placeholder="z.B. -5">
+                </div>
+                <div class="input-group">
+                    <label>c</label>
+                    <input type="text" id="abc-c" oninput="calculateABC()" placeholder="z.B. 6">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Lösungen x₁, x₂</div>
+                    <div class="result-value" id="abc-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <!-- Finanzen -->
+            <div class="calculator-section" id="zinsen">
+                <h2 class="calculator-title">Einfache Zinsen</h2>
+                <div class="formula-display">Z = K · p · t / 100</div>
+                <div class="input-group">
+                    <label>Kapital K</label>
+                    <input type="text" id="zins-k" oninput="calculateZinsen()" placeholder="z.B. 1000">
+                </div>
+                <div class="input-group">
+                    <label>Zinssatz p (%)</label>
+                    <input type="text" id="zins-p" oninput="calculateZinsen()" placeholder="z.B. 5">
+                </div>
+                <div class="input-group">
+                    <label>Zeit t (Jahre)</label>
+                    <input type="text" id="zins-t" oninput="calculateZinsen()" placeholder="z.B. 3">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Zinsen Z</div>
+                    <div class="result-value" id="zins-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="zinseszins">
+                <h2 class="calculator-title">Zinseszins</h2>
+                <div class="formula-display">K_n = K₀ · (1 + p/100)ⁿ</div>
+                <div class="input-group">
+                    <label>Anfangskapital K₀</label>
+                    <input type="text" id="zz-k" oninput="calculateZinseszins()" placeholder="z.B. 1000">
+                </div>
+                <div class="input-group">
+                    <label>Zinssatz p (%)</label>
+                    <input type="text" id="zz-p" oninput="calculateZinseszins()" placeholder="z.B. 5">
+                </div>
+                <div class="input-group">
+                    <label>Jahre n</label>
+                    <input type="text" id="zz-n" oninput="calculateZinseszins()" placeholder="z.B. 10">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Endkapital Kₙ</div>
+                    <div class="result-value" id="zz-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="mwst">
+                <h2 class="calculator-title">Mehrwertsteuer</h2>
+                <div class="formula-display">Brutto = Netto · (1 + MwSt/100)</div>
+                <div class="input-group">
+                    <label>Nettobetrag</label>
+                    <input type="text" id="mwst-netto" oninput="calculateMwst()" placeholder="z.B. 100">
+                </div>
+                <div class="input-group">
+                    <label>MwSt-Satz (%)</label>
+                    <input type="text" id="mwst-satz" oninput="calculateMwst()" placeholder="z.B. 19">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Bruttobetrag / MwSt-Betrag</div>
+                    <div class="result-value" id="mwst-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="rabatt">
+                <h2 class="calculator-title">Rabatt berechnen</h2>
+                <div class="formula-display">Endpreis = Preis · (1 - Rabatt/100)</div>
+                <div class="input-group">
+                    <label>Originalpreis</label>
+                    <input type="text" id="rabatt-preis" oninput="calculateRabatt()" placeholder="z.B. 150">
+                </div>
+                <div class="input-group">
+                    <label>Rabatt (%)</label>
+                    <input type="text" id="rabatt-prozent" oninput="calculateRabatt()" placeholder="z.B. 20">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Endpreis / Ersparnis</div>
+                    <div class="result-value" id="rabatt-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <!-- Umrechnungen -->
+            <div class="calculator-section" id="celsius-fahrenheit">
+                <h2 class="calculator-title">Celsius ↔ Fahrenheit</h2>
+                <div class="formula-display">°F = °C · 9/5 + 32  |  °C = (°F - 32) · 5/9</div>
+                <div class="input-group">
+                    <label>Celsius (°C)</label>
+                    <input type="text" id="temp-c" oninput="calculateTempC()" placeholder="z.B. 25">
+                </div>
+                <div class="input-group">
+                    <label>Fahrenheit (°F)</label>
+                    <input type="text" id="temp-f" oninput="calculateTempF()" placeholder="z.B. 77">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Umrechnung</div>
+                    <div class="result-value" id="temp-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="km-meilen">
+                <h2 class="calculator-title">Kilometer ↔ Meilen</h2>
+                <div class="formula-display">1 Meile = 1.60934 km</div>
+                <div class="input-group">
+                    <label>Kilometer (km)</label>
+                    <input type="text" id="dist-km" oninput="calculateDistKm()" placeholder="z.B. 100">
+                </div>
+                <div class="input-group">
+                    <label>Meilen (mi)</label>
+                    <input type="text" id="dist-mi" oninput="calculateDistMi()" placeholder="z.B. 62.14">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Umrechnung</div>
+                    <div class="result-value" id="dist-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <div class="calculator-section" id="kg-pfund">
+                <h2 class="calculator-title">Kilogramm ↔ Pfund</h2>
+                <div class="formula-display">1 Pfund = 0.453592 kg</div>
+                <div class="input-group">
+                    <label>Kilogramm (kg)</label>
+                    <input type="text" id="weight-kg" oninput="calculateWeightKg()" placeholder="z.B. 70">
+                </div>
+                <div class="input-group">
+                    <label>Pfund (lb)</label>
+                    <input type="text" id="weight-lb" oninput="calculateWeightLb()" placeholder="z.B. 154.32">
+                </div>
+                <div class="result-box" onclick="copyResult(this)">
+                    <div class="result-label">Umrechnung</div>
+                    <div class="result-value" id="weight-result">—</div>
+                    <div class="copy-hint">Klicken zum Kopieren</div>
+                </div>
+            </div>
+
+            <p style="text-align: center; color: #888; margin-top: 30px; font-size: 0.9rem;">
+                Formeln aus deiner Formelsammlung · 40+ Formeln · funktioniert auch offline · Ergebnisse ohne Gewähr – Einheiten beachten!
+            </p>
+        </div>
+    </div>
+
+    <div class="copied-toast" id="toast">✓ Kopiert!</div>
+
+    <script>
+        // Parse number (accepts comma or dot)
+        function parseNum(str) {
+            if (!str) return NaN;
+            return parseFloat(str.replace(',', '.'));
+        }
+
+        // Format result
+        function formatResult(num, decimals = 4) {
+            if (isNaN(num) || !isFinite(num)) return '—';
+            return Number(num.toFixed(decimals)).toString().replace('.', ',');
+        }
+
+        // Sidebar toggle
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+
+        // Category toggle
+        function toggleCategory(el) {
+            const list = el.nextElementSibling;
+            list.classList.toggle('open');
+            el.querySelector('span').textContent = list.classList.contains('open') ? '▲' : '▼';
+        }
+
+        // Show calculator
+        function showCalculator(id) {
+            document.querySelectorAll('.calculator-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.formula-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+            toggleSidebar();
+            loadInputs(id);
+        }
+
+        // Copy result
+        function copyResult(el) {
+            const value = el.querySelector('.result-value').textContent;
+            if (value && value !== '—') {
+                navigator.clipboard.writeText(value);
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            }
+        }
+
+        // LocalStorage
+        function saveInput(id, value) {
+            localStorage.setItem('formel_' + id, value);
+        }
+
+        function loadInputs(section) {
+            const inputs = document.querySelectorAll('#' + section + ' input');
+            inputs.forEach(input => {
+                const saved = localStorage.getItem('formel_' + input.id);
+                if (saved) {
+                    input.value = saved;
+                    input.dispatchEvent(new Event('input'));
+                }
+            });
+        }
+
+        // Auto-save on input
+        document.addEventListener('input', (e) => {
+            if (e.target.tagName === 'INPUT') {
+                saveInput(e.target.id, e.target.value);
+            }
+        });
+
+        // CALCULATION FUNCTIONS
+
+        // Geometrie
+        function calculateRechteckFlaeche() {
+            const a = parseNum(document.getElementById('rechteck-a').value);
+            const b = parseNum(document.getElementById('rechteck-b').value);
+            document.getElementById('rechteck-result').textContent = formatResult(a * b);
+        }
+
+        function calculateRechteckUmfang() {
+            const a = parseNum(document.getElementById('rechteck-umfang-a').value);
+            const b = parseNum(document.getElementById('rechteck-umfang-b').value);
+            document.getElementById('rechteck-umfang-result').textContent = formatResult(2 * (a + b));
+        }
+
+        function calculateKreisFlaeche() {
+            const r = parseNum(document.getElementById('kreis-r').value);
+            document.getElementById('kreis-flaeche-result').textContent = formatResult(Math.PI * r * r);
+        }
+
+        function calculateKreisUmfang() {
+            const r = parseNum(document.getElementById('kreis-umfang-r').value);
+            document.getElementById('kreis-umfang-result').textContent = formatResult(2 * Math.PI * r);
+        }
+
+        function calculateDreieckFlaeche() {
+            const g = parseNum(document.getElementById('dreieck-g').value);
+            const h = parseNum(document.getElementById('dreieck-h').value);
+            document.getElementById('dreieck-result').textContent = formatResult(0.5 * g * h);
+        }
+
+        function calculateTrapezFlaeche() {
+            const a = parseNum(document.getElementById('trapez-a').value);
+            const c = parseNum(document.getElementById('trapez-c').value);
+            const h = parseNum(document.getElementById('trapez-h').value);
+            document.getElementById('trapez-result').textContent = formatResult(0.5 * (a + c) * h);
+        }
+
+        function calculatePythagoras() {
+            const a = parseNum(document.getElementById('pyth-a').value);
+            const b = parseNum(document.getElementById('pyth-b').value);
+            document.getElementById('pyth-result').textContent = formatResult(Math.sqrt(a*a + b*b));
+        }
+
+        // Körper
+        function calculateQuaderVolumen() {
+            const a = parseNum(document.getElementById('quader-a').value);
+            const b = parseNum(document.getElementById('quader-b').value);
+            const c = parseNum(document.getElementById('quader-c').value);
+            document.getElementById('quader-vol-result').textContent = formatResult(a * b * c);
+        }
+
+        function calculateQuaderOberflaeche() {
+            const a = parseNum(document.getElementById('quader-ob-a').value);
+            const b = parseNum(document.getElementById('quader-ob-b').value);
+            const c = parseNum(document.getElementById('quader-ob-c').value);
+            document.getElementById('quader-ob-result').textContent = formatResult(2 * (a*b + a*c + b*c));
+        }
+
+        function calculateZylinderVolumen() {
+            const r = parseNum(document.getElementById('zyl-r').value);
+            const h = parseNum(document.getElementById('zyl-h').value);
+            document.getElementById('zyl-vol-result').textContent = formatResult(Math.PI * r * r * h);
+        }
+
+        function calculateZylinderOberflaeche() {
+            const r = parseNum(document.getElementById('zyl-ob-r').value);
+            const h = parseNum(document.getElementById('zyl-ob-h').value);
+            document.getElementById('zyl-ob-result').textContent = formatResult(2 * Math.PI * r * (r + h));
+        }
+
+        function calculateKugelVolumen() {
+            const r = parseNum(document.getElementById('kugel-r').value);
+            document.getElementById('kugel-vol-result').textContent = formatResult((4/3) * Math.PI * r * r * r);
+        }
+
+        function calculateKugelOberflaeche() {
+            const r = parseNum(document.getElementById('kugel-ob-r').value);
+            document.getElementById('kugel-ob-result').textContent = formatResult(4 * Math.PI * r * r);
+        }
+
+        function calculateKegelVolumen() {
+            const r = parseNum(document.getElementById('kegel-r').value);
+            const h = parseNum(document.getElementById('kegel-h').value);
+            document.getElementById('kegel-vol-result').textContent = formatResult((1/3) * Math.PI * r * r * h);
+        }
+
+        function calculatePyramideVolumen() {
+            const g = parseNum(document.getElementById('pyramide-g').value);
+            const h = parseNum(document.getElementById('pyramide-h').value);
+            document.getElementById('pyramide-result').textContent = formatResult((1/3) * g * h);
+        }
+
+        // Physik Mechanik
+        function calculateGeschwindigkeit() {
+            const s = parseNum(document.getElementById('gesch-s').value);
+            const t = parseNum(document.getElementById('gesch-t').value);
+            document.getElementById('gesch-result').textContent = formatResult(s / t);
+        }
+
+        function calculateBeschleunigung() {
+            const v = parseNum(document.getElementById('beschl-v').value);
+            const t = parseNum(document.getElementById('beschl-t').value);
+            document.getElementById('beschl-result').textContent = formatResult(v / t);
+        }
+
+        function calculateKraft() {
+            const m = parseNum(document.getElementById('kraft-m').value);
+            const a = parseNum(document.getElementById('kraft-a').value);
+            document.getElementById('kraft-result').textContent = formatResult(m * a);
+        }
+
+        function calculateArbeit() {
+            const f = parseNum(document.getElementById('arbeit-f').value);
+            const s = parseNum(document.getElementById('arbeit-s').value);
+            document.getElementById('arbeit-result').textContent = formatResult(f * s);
+        }
+
+        function calculateLeistung() {
+            const w = parseNum(document.getElementById('leistung-w').value);
+            const t = parseNum(document.getElementById('leistung-t').value);
+            document.getElementById('leistung-result').textContent = formatResult(w / t);
+        }
+
+        function calculateDichte() {
+            const m = parseNum(document.getElementById('dichte-m').value);
+            const v = parseNum(document.getElementById('dichte-v').value);
+            document.getElementById('dichte-result').textContent = formatResult(m / v);
+        }
+
+        function calculateDruck() {
+            const f = parseNum(document.getElementById('druck-f').value);
+            const a = parseNum(document.getElementById('druck-a').value);
+            document.getElementById('druck-result').textContent = formatResult(f / a);
+        }
+
+        // Elektrizität
+        function calculateOhm() {
+            const r = parseNum(document.getElementById('ohm-r').value);
+            const i = parseNum(document.getElementById('ohm-i').value);
+            document.getElementById('ohm-result').textContent = formatResult(r * i);
+        }
+
+        function calculateElLeistung() {
+            const u = parseNum(document.getElementById('el-leist-u').value);
+            const i = parseNum(document.getElementById('el-leist-i').value);
+            document.getElementById('el-leist-result').textContent = formatResult(u * i);
+        }
+
+        function calculateElArbeit() {
+            const p = parseNum(document.getElementById('el-arbeit-p').value);
+            const t = parseNum(document.getElementById('el-arbeit-t').value);
+            const wh = p * t;
+            document.getElementById('el-arbeit-result').textContent = formatResult(wh) + ' Wh = ' + formatResult(wh / 1000) + ' kWh';
+        }
+
+        function calculateReihe() {
+            const values = document.getElementById('reihe-r').value.split(/[,;]/).map(v => parseNum(v.trim())).filter(v => !isNaN(v));
+            if (values.length === 0) {
+                document.getElementById('reihe-result').textContent = '—';
+                return;
+            }
+            const sum = values.reduce((a, b) => a + b, 0);
+            document.getElementById('reihe-result').textContent = formatResult(sum);
+        }
+
+        function calculateParallel() {
+            const values = document.getElementById('parallel-r').value.split(/[,;]/).map(v => parseNum(v.trim())).filter(v => !isNaN(v) && v !== 0);
+            if (values.length === 0) {
+                document.getElementById('parallel-result').textContent = '—';
+                return;
+            }
+            const sumInverse = values.reduce((a, b) => a + 1/b, 0);
+            document.getElementById('parallel-result').textContent = formatResult(1 / sumInverse);
+        }
+
+        // Mathematik
+        function calculateProzent() {
+            const g = parseNum(document.getElementById('prozent-g').value);
+            const p = parseNum(document.getElementById('prozent-p').value);
+            document.getElementById('prozent-result').textContent = formatResult(g * p / 100);
+        }
+
+        function calculateDreisatz() {
+            const a = parseNum(document.getElementById('drei-a').value);
+            const b = parseNum(document.getElementById('drei-b').value);
+            const c = parseNum(document.getElementById('drei-c').value);
+            document.getElementById('drei-result').textContent = formatResult((b * c) / a);
+        }
+
+        function calculateMittelwert() {
+            const values = document.getElementById('mittel-werte').value.split(/[,;]/).map(v => parseNum(v.trim())).filter(v => !isNaN(v));
+            if (values.length === 0) {
+                document.getElementById('mittel-result').textContent = '—';
+                return;
+            }
+            const sum = values.reduce((a, b) => a + b, 0);
+            document.getElementById('mittel-result').textContent = formatResult(sum / values.length);
+        }
+
+        function calculatePQ() {
+            const p = parseNum(document.getElementById('pq-p').value);
+            const q = parseNum(document.getElementById('pq-q').value);
+            const discriminant = (p/2) * (p/2) - q;
+            if (discriminant < 0) {
+                document.getElementById('pq-result').textContent = 'Keine reelle Lösung';
+                return;
+            }
+            const x1 = -p/2 + Math.sqrt(discriminant);
+            const x2 = -p/2 - Math.sqrt(discriminant);
+            if (discriminant === 0) {
+                document.getElementById('pq-result').textContent = 'x = ' + formatResult(x1);
+            } else {
+                document.getElementById('pq-result').textContent = 'x₁ = ' + formatResult(x1) + ' | x₂ = ' + formatResult(x2);
+            }
+        }
+
+        function calculateABC() {
+            const a = parseNum(document.getElementById('abc-a').value);
+            const b = parseNum(document.getElementById('abc-b').value);
+            const c = parseNum(document.getElementById('abc-c').value);
+            const discriminant = b*b - 4*a*c;
+            if (discriminant < 0) {
+                document.getElementById('abc-result').textContent = 'Keine reelle Lösung';
+                return;
+            }
+            const x1 = (-b + Math.sqrt(discriminant)) / (2*a);
+            const x2 = (-b - Math.sqrt(discriminant)) / (2*a);
+            if (discriminant === 0) {
+                document.getElementById('abc-result').textContent = 'x = ' + formatResult(x1);
+            } else {
+                document.getElementById('abc-result').textContent = 'x₁ = ' + formatResult(x1) + ' | x₂ = ' + formatResult(x2);
+            }
+        }
+
+        // Finanzen
+        function calculateZinsen() {
+            const k = parseNum(document.getElementById('zins-k').value);
+            const p = parseNum(document.getElementById('zins-p').value);
+            const t = parseNum(document.getElementById('zins-t').value);
+            document.getElementById('zins-result').textContent = formatResult(k * p * t / 100);
+        }
+
+        function calculateZinseszins() {
+            const k = parseNum(document.getElementById('zz-k').value);
+            const p = parseNum(document.getElementById('zz-p').value);
+            const n = parseNum(document.getElementById('zz-n').value);
+            document.getElementById('zz-result').textContent = formatResult(k * Math.pow(1 + p/100, n));
+        }
+
+        function calculateMwst() {
+            const netto = parseNum(document.getElementById('mwst-netto').value);
+            const satz = parseNum(document.getElementById('mwst-satz').value);
+            const mwst = netto * satz / 100;
+            const brutto = netto + mwst;
+            document.getElementById('mwst-result').textContent = formatResult(brutto) + ' (MwSt: ' + formatResult(mwst) + ')';
+        }
+
+        function calculateRabatt() {
+            const preis = parseNum(document.getElementById('rabatt-preis').value);
+            const prozent = parseNum(document.getElementById('rabatt-prozent').value);
+            const ersparnis = preis * prozent / 100;
+            const endpreis = preis - ersparnis;
+            document.getElementById('rabatt-result').textContent = formatResult(endpreis) + ' (Ersparnis: ' + formatResult(ersparnis) + ')';
+        }
+
+        // Umrechnungen
+        function calculateTempC() {
+            const c = parseNum(document.getElementById('temp-c').value);
+            const f = c * 9/5 + 32;
+            document.getElementById('temp-result').textContent = formatResult(c) + ' °C = ' + formatResult(f) + ' °F';
+            document.getElementById('temp-f').value = '';
+        }
+
+        function calculateTempF() {
+            const f = parseNum(document.getElementById('temp-f').value);
+            const c = (f - 32) * 5/9;
+            document.getElementById('temp-result').textContent = formatResult(f) + ' °F = ' + formatResult(c) + ' °C';
+            document.getElementById('temp-c').value = '';
+        }
+
+        function calculateDistKm() {
+            const km = parseNum(document.getElementById('dist-km').value);
+            const mi = km / 1.60934;
+            document.getElementById('dist-result').textContent = formatResult(km) + ' km = ' + formatResult(mi) + ' mi';
+            document.getElementById('dist-mi').value = '';
+        }
+
+        function calculateDistMi() {
+            const mi = parseNum(document.getElementById('dist-mi').value);
+            const km = mi * 1.60934;
+            document.getElementById('dist-result').textContent = formatResult(mi) + ' mi = ' + formatResult(km) + ' km';
+            document.getElementById('dist-km').value = '';
+        }
+
+        function calculateWeightKg() {
+            const kg = parseNum(document.getElementById('weight-kg').value);
+            const lb = kg / 0.453592;
+            document.getElementById('weight-result').textContent = formatResult(kg) + ' kg = ' + formatResult(lb) + ' lb';
+            document.getElementById('weight-lb').value = '';
+        }
+
+        function calculateWeightLb() {
+            const lb = parseNum(document.getElementById('weight-lb').value);
+            const kg = lb * 0.453592;
+            document.getElementById('weight-result').textContent = formatResult(lb) + ' lb = ' + formatResult(kg) + ' kg';
+            document.getElementById('weight-kg').value = '';
+        }
+    </script>
+</body>
+</html>
