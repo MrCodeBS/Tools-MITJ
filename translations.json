@@ -28,6 +28,12 @@
         "title": "Up to the Star",
         "description": "A strategic dice game where players place stones on a star-shaped board.",
         "stat": "Strategic gameplay"
+      },
+      "formelsammlung": {
+        "badge": "Learning",
+        "title": "Formula Calculator",
+        "description": "Over 40 formulas from geometry, physics, mathematics, and finance. Calculates instantly on input, saves values in the browser, and works offline.",
+        "stat": "40+ formulas · 7 categories"
       }
     },
     "buttons": {
@@ -71,6 +77,12 @@
         "title": "Bis zum Stern",
         "description": "Ein strategisches Würfelspiel, bei dem Spieler Steine auf einem sternförmigen Spielfeld platzieren.",
         "stat": "Strategisches Spielerlebnis"
+      },
+      "formelsammlung": {
+        "badge": "Lernen",
+        "title": "Formelsammlung-Rechner",
+        "description": "Über 40 Formeln aus Geometrie, Physik, Mathematik und Finanzen. Rechnet sofort bei Eingabe, speichert Werte im Browser und funktioniert auch offline.",
+        "stat": "40+ Formeln · 7 Kategorien"
       }
     },
     "buttons": {
