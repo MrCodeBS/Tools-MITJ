@@ -235,13 +235,9 @@ window.addEventListener('hashchange',route); nav(); route();
 <!-- Clerk Authentication Initialization -->
 <script>
 // =====================================================
-// ALLOWED USERS - Add Clerk user IDs here
-// Find user IDs in: https://dashboard.clerk.com/apps/app_3LCBwca6GmRTAi7NbbdJQwGWYx9/instances/ins_3LCBwYDnjhcP899Eu388tjbUQ4Y/users
+// PAID USER CHECK - Server-side validation via Vercel Edge Function
+// Checks user.publicMetadata.paid on the server (secure)
 // =====================================================
-const ALLOWED_USER_IDS = [
-  'user_3LCJqRL30ljNQAOU0Ok9dbeZOcM',  // Bhupinder Singh - info@singhglobal.ch
-  'user_3LCMKPw56zeCQfrDrUDdYZW7VJo',  // Paid user
-];
 
 window.addEventListener('load', async function() {
   const authLoading = document.getElementById('auth-loading');
@@ -258,12 +254,16 @@ window.addEventListener('load', async function() {
     if (!denied) {
       denied = document.createElement('div');
       denied.id = 'access-denied';
-      denied.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);padding:20px;text-align:center;';
+      denied.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg, #001155 0%, #1781e3 100%);padding:20px;text-align:center;';
       denied.innerHTML = `
-        <h1 style="color:var(--navy);margin-bottom:10px;">🔒 Zugang verweigert</h1>
-        <p style="color:var(--mut);margin-bottom:20px;">Dieses Tool ist nur für zahlende Benutzer verfügbar.</p>
-        <p style="color:var(--mut);font-size:14px;">Kontaktiere den Administrator für Zugang.</p>
-        <button onclick="Clerk.signOut()" style="margin-top:20px;padding:10px 20px;background:var(--navy);color:#fff;border:none;border-radius:8px;cursor:pointer;">Abmelden</button>
+        <div style="background:#fff;border-radius:16px;padding:40px;max-width:400px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);">
+          <div style="font-size:48px;margin-bottom:16px;">🔒</div>
+          <h1 style="color:#001155;margin:0 0 10px;font-size:24px;">Premium-Zugang erforderlich</h1>
+          <p style="color:#6b7385;margin:0 0 24px;font-size:15px;">Dieses Tool ist nur für zahlende Benutzer verfügbar.</p>
+          <a href="https://ko-fi.com/mrcode22" target="_blank" style="display:inline-block;padding:12px 24px;background:#FF5E5B;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-bottom:12px;">☕ Premium freischalten</a>
+          <br>
+          <button onclick="Clerk.signOut()" style="margin-top:12px;padding:10px 20px;background:none;color:#001155;border:1px solid #cdd5e3;border-radius:8px;cursor:pointer;font-size:14px;">Abmelden</button>
+        </div>
       `;
       document.body.appendChild(denied);
     }
@@ -275,11 +275,55 @@ window.addEventListener('load', async function() {
     if (denied) denied.style.display = 'none';
   }
 
-  function checkAccess(user) {
-    if (!user) return false;
-    // Allow access if whitelist is empty (for testing) or user is in list
-    if (ALLOWED_USER_IDS.length === 0) return true;
-    return ALLOWED_USER_IDS.includes(user.id);
+  // Server-side access check
+  async function checkAccessServer() {
+    try {
+      const token = await Clerk.session?.getToken();
+      if (!token) return false;
+
+      const response = await fetch('/api/verify-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionToken: Clerk.session.id }),
+      });
+
+      if (!response.ok) return false;
+      
+      const data = await response.json();
+      return data.access === true;
+    } catch (error) {
+      console.error('Server validation error:', error);
+      // Fallback to client-side check if server unavailable
+      return Clerk.user?.publicMetadata?.paid === true;
+    }
+  }
+
+  async function handleAuthState(user) {
+    if (user) {
+      signInContainer.style.display = 'none';
+      authLoading.style.display = 'flex';
+      
+      const hasAccess = await checkAccessServer();
+      authLoading.style.display = 'none';
+      
+      if (hasAccess) {
+        hideAccessDenied();
+        appContent.classList.add('visible');
+        if (!userButtonContainer.hasChildNodes()) {
+          Clerk.mountUserButton(userButtonContainer);
+        }
+      } else {
+        showAccessDenied();
+      }
+    } else {
+      hideAccessDenied();
+      appContent.classList.remove('visible');
+      signInContainer.style.display = 'flex';
+      const clerkSignIn = document.getElementById('clerk-sign-in');
+      if (!clerkSignIn.hasChildNodes()) {
+        Clerk.mountSignIn(clerkSignIn);
+      }
+    }
   }
 
   try {
@@ -288,41 +332,10 @@ window.addEventListener('load', async function() {
     });
 
     authLoading.style.display = 'none';
+    await handleAuthState(Clerk.user);
 
-    if (Clerk.user) {
-      if (checkAccess(Clerk.user)) {
-        hideAccessDenied();
-        appContent.classList.add('visible');
-        Clerk.mountUserButton(userButtonContainer);
-      } else {
-        showAccessDenied();
-      }
-    } else {
-      signInContainer.style.display = 'flex';
-      Clerk.mountSignIn(document.getElementById('clerk-sign-in'));
-    }
-
-    Clerk.addListener(({ user }) => {
-      if (user) {
-        signInContainer.style.display = 'none';
-        if (checkAccess(user)) {
-          hideAccessDenied();
-          appContent.classList.add('visible');
-          if (!userButtonContainer.hasChildNodes()) {
-            Clerk.mountUserButton(userButtonContainer);
-          }
-        } else {
-          showAccessDenied();
-        }
-      } else {
-        hideAccessDenied();
-        appContent.classList.remove('visible');
-        signInContainer.style.display = 'flex';
-        const clerkSignIn = document.getElementById('clerk-sign-in');
-        if (!clerkSignIn.hasChildNodes()) {
-          Clerk.mountSignIn(clerkSignIn);
-        }
-      }
+    Clerk.addListener(async ({ user }) => {
+      await handleAuthState(user);
     });
   } catch (error) {
     console.error('Clerk initialization failed:', error);
