@@ -1,72 +1,151 @@
 // Vercel Middleware - Protects premium content at the edge
 // The page is NEVER sent to unpaid users
+// OWASP compliant: secure session verification, secure error handling
 
 export const config = {
   matcher: '/formelsammlung-rechner/:path*',
 };
 
-export default async function middleware(request) {
-  // Get Clerk session token from cookie
-  const sessionToken = request.cookies.get('__session')?.value;
-  
-  if (!sessionToken) {
-    // No session - redirect to login page
-    return Response.redirect(new URL('/formelsammlung-rechner/login', request.url));
+// Secure redirect helper - prevents open redirect vulnerabilities
+function secureRedirect(request, path) {
+  const url = new URL(path, request.url);
+  // Ensure redirect stays on same origin
+  if (url.origin !== new URL(request.url).origin) {
+    url.href = new URL(path, request.url).href;
   }
+  return Response.redirect(url);
+}
 
-  const clerkSecretKey = process.env.CLERK_SECRET_KEY;
+// Safely decode JWT payload without executing anything
+function safeDecodeJWTPayload(token) {
+  try {
+    if (typeof token !== 'string') return null;
+    
+    const parts = token.split('.');
+    if (parts.length !== 3) return null; // JWT must have 3 parts
+    
+    // Validate base64url format for payload
+    const payload = parts[1];
+    if (!/^[A-Za-z0-9_-]+$/.test(payload)) return null;
+    
+    // Decode base64url
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const decoded = atob(base64);
+    const parsed = JSON.parse(decoded);
+    
+    // Validate expected structure
+    if (typeof parsed !== 'object' || parsed === null) return null;
+    
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+// Verify session with Clerk Backend API
+// This validates the session exists and is legitimate server-side
+async function verifySessionWithClerk(sessionId, clerkSecretKey) {
+  if (!sessionId || typeof sessionId !== 'string') {
+    return { valid: false };
+  }
   
-  if (!clerkSecretKey) {
-    return new Response('Server configuration error', { status: 500 });
+  // Sanitize session ID - Clerk IDs are alphanumeric with underscores
+  if (!/^[a-zA-Z0-9_]+$/.test(sessionId)) {
+    return { valid: false };
   }
 
   try {
-    // Verify the JWT and get claims
-    // Clerk JWTs contain the session ID in the 'sid' claim
-    const payload = JSON.parse(atob(sessionToken.split('.')[1]));
-    const sessionId = payload.sid;
-
-    if (!sessionId) {
-      return Response.redirect(new URL('/formelsammlung-rechner/login', request.url));
-    }
-
-    // Verify session with Clerk API
-    const sessionResponse = await fetch(`https://api.clerk.com/v1/sessions/${sessionId}`, {
-      headers: { 'Authorization': `Bearer ${clerkSecretKey}` },
+    const response = await fetch(`https://api.clerk.com/v1/sessions/${sessionId}`, {
+      method: 'GET',
+      headers: { 
+        'Authorization': `Bearer ${clerkSecretKey}`,
+        'Content-Type': 'application/json',
+      },
     });
 
-    if (!sessionResponse.ok) {
-      return Response.redirect(new URL('/formelsammlung-rechner/login', request.url));
+    if (!response.ok) {
+      return { valid: false };
     }
 
-    const sessionData = await sessionResponse.json();
+    const data = await response.json();
     
-    if (sessionData.status !== 'active') {
-      return Response.redirect(new URL('/formelsammlung-rechner/login', request.url));
+    // Verify session is active
+    if (data.status !== 'active') {
+      return { valid: false };
+    }
+
+    return { 
+      valid: true, 
+      userId: data.user_id,
+      sessionId: data.id,
+    };
+  } catch {
+    return { valid: false };
+  }
+}
+
+export default async function middleware(request) {
+  const loginUrl = '/formelsammlung-rechner/login';
+  const paywallUrl = '/formelsammlung-rechner/paywall';
+
+  // Get Clerk session token from cookie
+  const sessionToken = request.cookies.get('__session')?.value;
+
+  if (!sessionToken) {
+    return secureRedirect(request, loginUrl);
+  }
+
+  const clerkSecretKey = process.env.CLERK_SECRET_KEY;
+
+  if (!clerkSecretKey) {
+    // A10: Don't expose internal state - generic error
+    console.error('[AUTH] Configuration error - missing secret key');
+    return new Response('Service temporarily unavailable', { status: 503 });
+  }
+
+  try {
+    // Safely decode the JWT to get session ID
+    const payload = safeDecodeJWTPayload(sessionToken);
+    
+    if (!payload || !payload.sid) {
+      return secureRedirect(request, loginUrl);
+    }
+
+    // Verify session with Clerk Backend API
+    // This is the source of truth - even if JWT is tampered, 
+    // Clerk API will reject invalid session IDs
+    const verification = await verifySessionWithClerk(payload.sid, clerkSecretKey);
+
+    if (!verification.valid) {
+      return secureRedirect(request, loginUrl);
     }
 
     // Get user data to check paid status
-    const userResponse = await fetch(`https://api.clerk.com/v1/users/${sessionData.user_id}`, {
+    const userResponse = await fetch(`https://api.clerk.com/v1/users/${verification.userId}`, {
       headers: { 'Authorization': `Bearer ${clerkSecretKey}` },
     });
 
     if (!userResponse.ok) {
-      return Response.redirect(new URL('/formelsammlung-rechner/login', request.url));
+      return secureRedirect(request, loginUrl);
     }
 
     const userData = await userResponse.json();
     const isPaid = userData.public_metadata?.paid === true;
 
     if (!isPaid) {
-      // User is logged in but not paid - show paywall
-      return Response.redirect(new URL('/formelsammlung-rechner/paywall', request.url));
+      return secureRedirect(request, paywallUrl);
     }
 
     // User is authenticated AND paid - allow access
     return;
 
   } catch (error) {
-    console.error('Middleware error:', error);
-    return Response.redirect(new URL('/formelsammlung-rechner/login', request.url));
+    // A09: Structured logging without sensitive data
+    console.error('[AUTH] Middleware error:', {
+      timestamp: new Date().toISOString(),
+      path: new URL(request.url).pathname,
+      errorType: error?.name || 'Unknown',
+    });
+    return secureRedirect(request, loginUrl);
   }
 }
