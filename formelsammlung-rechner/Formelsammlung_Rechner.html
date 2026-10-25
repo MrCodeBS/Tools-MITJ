@@ -256,13 +256,17 @@ window.addEventListener('load', async function() {
       denied.id = 'access-denied';
       denied.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg, #001155 0%, #1781e3 100%);padding:20px;text-align:center;';
       denied.innerHTML = `
-        <div style="background:#fff;border-radius:16px;padding:40px;max-width:400px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);">
+        <div style="background:#fff;border-radius:16px;padding:40px;max-width:420px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);">
           <div style="font-size:48px;margin-bottom:16px;">🔒</div>
           <h1 style="color:#001155;margin:0 0 10px;font-size:24px;">Premium-Zugang erforderlich</h1>
-          <p style="color:#6b7385;margin:0 0 24px;font-size:15px;">Dieses Tool ist nur für zahlende Benutzer verfügbar.</p>
-          <a href="https://ko-fi.com/mrcode22" target="_blank" style="display:inline-block;padding:12px 24px;background:#FF5E5B;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-bottom:12px;">☕ Premium freischalten</a>
-          <br>
-          <button onclick="Clerk.signOut()" style="margin-top:12px;padding:10px 20px;background:none;color:#001155;border:1px solid #cdd5e3;border-radius:8px;cursor:pointer;font-size:14px;">Abmelden</button>
+          <p style="color:#6b7385;margin:0 0 8px;font-size:15px;">Schalte alle 665+ Formeln frei für nur</p>
+          <p style="color:#001155;font-size:32px;font-weight:700;margin:0 0 24px;">CHF 3.50<span style="font-size:14px;font-weight:400;color:#6b7385">/Monat</span></p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <a href="https://ko-fi.com/mrcode22" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;background:#FF5E5B;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;">☕ Mit Ko-fi abonnieren</a>
+            <a href="https://donate.stripe.com/fZu14o4krePKe7i1YEeAg00" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;background:#635BFF;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;">💳 Mit Karte zahlen</a>
+          </div>
+          <p style="color:#6b7385;font-size:12px;margin:16px 0 0;">Nach der Zahlung wird dein Zugang innerhalb von 24h freigeschaltet.</p>
+          <button onclick="Clerk.signOut()" style="margin-top:16px;padding:10px 20px;background:none;color:#001155;border:1px solid #cdd5e3;border-radius:8px;cursor:pointer;font-size:14px;">Abmelden</button>
         </div>
       `;
       document.body.appendChild(denied);
