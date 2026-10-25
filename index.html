@@ -1,19 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IT Journey Tools Hub</title>
     <link rel="stylesheet" href="styles.css" />
+    <script src="i18n.js"></script>
   </head>
   <body>
     <header class="header">
       <div class="header__content">
-        <h1 class="header__title">My IT Journey Tools</h1>
-        <p class="header__description">
-          A collection of powerful tools to enhance your learning experience and
-          boost productivity
-        </p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h1 class="header__title" data-i18n="header.title">Meine IT-Journey-Tools</h1>
+            <p class="header__description" data-i18n="header.description">
+              Eine Sammlung von leistungsstarken Tools zur Verbesserung deines Lernerlebnisses und zur Steigerung der Produktivität
+            </p>
+          </div>
+          <div style="margin-right: 20px;">
+            <label for="language-select" data-i18n="language" style="margin-right: 10px; font-weight: bold;">Sprache</label>
+            <select id="language-select" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+              <option value="de">Deutsch</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -22,12 +33,10 @@
         <div class="tool-card" data-href="bionic-reader/bionic-reader.html">
           <div class="tool-icon">👁️</div>
           <div>
-            <span class="tool-badge">Accessibility</span>
-            <h2 class="tool-title">Bionic Reading Converter</h2>
-            <p class="tool-description">
-              Transform text to enhance readability for people with dyslexia.
-              Our bionic reading tool highlights key parts of words to improve
-              reading speed and comprehension.
+            <span class="tool-badge" data-i18n="tools.bionicReader.badge">Barrierefreiheit</span>
+            <h2 class="tool-title" data-i18n="tools.bionicReader.title">Bionic Reading Konverter</h2>
+            <p class="tool-description" data-i18n="tools.bionicReader.description">
+              Transformiere Text um die Lesbarkeit für Menschen mit Dyslexie zu verbessern. Unser Bionic-Reading-Tool hebt Schlüsselteile von Wörtern hervor, um Lesegeschwindigkeit und Verständnis zu verbessern.
             </p>
           </div>
           <div class="tool-stat">
@@ -40,17 +49,17 @@
               <circle cx="12" cy="12" r="10" />
               <path d="M12 6v6l4 2" />
             </svg>
-            <span>Process text in seconds</span>
+            <span data-i18n="tools.bionicReader.stat">Text in Sekunden verarbeiten</span>
           </div>
         </div>
 
         <div class="tool-card" data-href="fh/flash-hero.html">
           <div class="tool-icon">🗃️</div>
           <div>
-            <span class="tool-badge">learning</span>
-            <h2 class="tool-title">Flash Hero</h2>
-            <p class="tool-description">
-              Interactive and fun way to learn with flash cards
+            <span class="tool-badge" data-i18n="tools.flashHero.badge">Lernen</span>
+            <h2 class="tool-title" data-i18n="tools.flashHero.title">Flash Hero</h2>
+            <p class="tool-description" data-i18n="tools.flashHero.description">
+              Interaktive und unterhaltsame Art zu lernen mit Lernkarten
             </p>
           </div>
           <div class="tool-stat">
@@ -62,19 +71,17 @@
             >
               <path d="M8 3l9 9-9 9" />
             </svg>
-            <span>10+ languages supported</span>
+            <span data-i18n="tools.flashHero.stat">10+ Sprachen unterstützt</span>
           </div>
         </div>
 
         <div class="tool-card" data-href="Contrast-Meter/Contrast-Meter.html">
           <div class="tool-icon">🎨</div>
           <div>
-            <span class="tool-badge">Design</span>
-            <h2 class="tool-title">Color Contrast Checker</h2>
-            <p class="tool-description">
-              Ensure your color combinations meet WCAG accessibility guidelines.
-              Perfect for web designers and developers focusing on inclusive
-              design.
+            <span class="tool-badge" data-i18n="tools.contrastMeter.badge">Design</span>
+            <h2 class="tool-title" data-i18n="tools.contrastMeter.title">Farbkontrast-Checker</h2>
+            <p class="tool-description" data-i18n="tools.contrastMeter.description">
+              Stelle sicher, dass deine Farbkombinationen die WCAG-Richtlinien zur Barrierefreiheit erfüllen. Perfekt für Webdesigner und Entwickler, die sich auf inklusives Design konzentrieren.
             </p>
           </div>
           <div class="tool-stat">
@@ -87,19 +94,17 @@
               <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
               <path d="M22 4L12 14.01l-3-3" />
             </svg>
-            <span>WCAG 2.1 compliant</span>
+            <span data-i18n="tools.contrastMeter.stat">WCAG 2.1 konform</span>
           </div>
         </div>
 
         <div class="tool-card" data-href="up-to-the-star/index.html">
           <div class="tool-icon">⭐</div>
           <div>
-            <span class="tool-badge">Game</span>
-            <h2 class="tool-title">Up to the Star</h2>
-            <p class="tool-description">
-              A strategic dice game where players place stones on a star-shaped board.
-              Roll the dice, place your stones wisely, and be the first player to use
-              all your stones to win!
+            <span class="tool-badge" data-i18n="tools.upToTheStar.badge">Spiel</span>
+            <h2 class="tool-title" data-i18n="tools.upToTheStar.title">Bis zum Stern</h2>
+            <p class="tool-description" data-i18n="tools.upToTheStar.description">
+              Ein strategisches Würfelspiel, bei dem Spieler Steine auf einem sternförmigen Spielfeld platzieren.
             </p>
           </div>
           <div class="tool-stat">
@@ -111,7 +116,7 @@
             >
               <path d="M17 8l4 4-4 4M7 16l-4-4 4-4" />
             </svg>
-            <span>2 player interactive game</span>
+            <span data-i18n="tools.upToTheStar.stat">Strategisches Spielerlebnis</span>
           </div>
         </div>
 
@@ -189,28 +194,6 @@
           </div>
         </div>
 
-        <div class="tool-card" data-href="https://chromewebstore.google.com/detail/kcjjapegjbidhbjkmcekddfdcpojmihl" target="_blank" rel="noopener noreferrer">
-          <div class="tool-icon">⚖️</div>
-          <div>
-            <span class="tool-badge">Workflow & Planning</span>
-            <h2 class="tool-title">The Procrastination Engine</h2>
-            <p class="tool-description">
-              A functional judge of your web browsing habits. Scans pages
-              for clickbait and distracting content, scoring a "Regret
-              Level" so you know what you're getting into.
-            </p>
-          </div>
-          <div class="tool-stat">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z" />
-            </svg>
-            <span>Chrome Extension</span>
-          </div>
         </div>
       </div>
 
@@ -241,6 +224,34 @@
           >
             💳 Donate (CHF / other currencies)
           </a>
+        </div>
+      </section>
+    </main>
+    <script src="script.js"></script>
+    <script>
+      // Wait for i18n to be ready before setting up event listeners
+      const initLanguageSwitcher = () => {
+        const languageSelect = document.getElementById('language-select');
+        if (languageSelect) {
+          // Set the select to current language
+          languageSelect.value = i18n.getLanguage();
+          
+          // Add change listener
+          languageSelect.addEventListener('change', (e) => {
+            i18n.setLanguage(e.target.value);
+          });
+        }
+      };
+
+      // Initialize after DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLanguageSwitcher);
+      } else {
+        initLanguageSwitcher();
+      }
+    </script>
+  </body>
+</html>
         </div>
       </section>
     </main>

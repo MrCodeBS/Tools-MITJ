@@ -1,0 +1,105 @@
+{
+  "en": {
+    "header": {
+      "title": "My IT Journey Tools",
+      "description": "A collection of powerful tools to enhance your learning experience and boost productivity"
+    },
+    "tools": {
+      "bionicReader": {
+        "badge": "Accessibility",
+        "title": "Bionic Reading Converter",
+        "description": "Transform text to enhance readability for people with dyslexia. Our bionic reading tool highlights key parts of words to improve reading speed and comprehension.",
+        "stat": "Process text in seconds"
+      },
+      "flashHero": {
+        "badge": "Learning",
+        "title": "Flash Hero",
+        "description": "Interactive and fun way to learn with flash cards",
+        "stat": "10+ languages supported"
+      },
+      "contrastMeter": {
+        "badge": "Design",
+        "title": "Color Contrast Checker",
+        "description": "Ensure your color combinations meet WCAG accessibility guidelines. Perfect for web designers and developers focusing on inclusive design.",
+        "stat": "WCAG 2.1 compliant"
+      },
+      "upToTheStar": {
+        "badge": "Game",
+        "title": "Up to the Star",
+        "description": "A strategic dice game where players place stones on a star-shaped board.",
+        "stat": "Strategic gameplay"
+      }
+    },
+    "buttons": {
+      "convertToBionic": "Convert to Bionic Reading",
+      "fullScreen": "Full Screen",
+      "downloadPDF": "Download as PDF",
+      "back": "Back to Tools"
+    },
+    "bionic": {
+      "placeholder": "Paste your text here...",
+      "title": "Bionic Reading Converter"
+    },
+    "language": "Language"
+  },
+  "de": {
+    "header": {
+      "title": "Meine IT-Journey-Tools",
+      "description": "Eine Sammlung von leistungsstarken Tools zur Verbesserung deines Lernerlebnisses und zur Steigerung der Produktivität"
+    },
+    "tools": {
+      "bionicReader": {
+        "badge": "Barrierefreiheit",
+        "title": "Bionic Reading Konverter",
+        "description": "Transformiere Text um die Lesbarkeit für Menschen mit Dyslexie zu verbessern. Unser Bionic-Reading-Tool hebt Schlüsselteile von Wörtern hervor, um Lesegeschwindigkeit und Verständnis zu verbessern.",
+        "stat": "Text in Sekunden verarbeiten"
+      },
+      "flashHero": {
+        "badge": "Lernen",
+        "title": "Flash Hero",
+        "description": "Interaktive und unterhaltsame Art zu lernen mit Lernkarten",
+        "stat": "10+ Sprachen unterstützt"
+      },
+      "contrastMeter": {
+        "badge": "Design",
+        "title": "Farbkontrast-Checker",
+        "description": "Stelle sicher, dass deine Farbkombinationen die WCAG-Richtlinien zur Barrierefreiheit erfüllen. Perfekt für Webdesigner und Entwickler, die sich auf inklusives Design konzentrieren.",
+        "stat": "WCAG 2.1 konform"
+      },
+      "upToTheStar": {
+        "badge": "Spiel",
+        "title": "Bis zum Stern",
+        "description": "Ein strategisches Würfelspiel, bei dem Spieler Steine auf einem sternförmigen Spielfeld platzieren.",
+        "stat": "Strategisches Spielerlebnis"
+      }
+    },
+    "buttons": {
+      "convertToBionic": "In Bionic Reading umwandeln",
+      "fullScreen": "Vollbildmodus",
+      "downloadPDF": "Als PDF herunterladen",
+      "back": "Zurück zu den Tools"
+    },
+    "bionic": {
+      "placeholder": "Geben Sie Ihren Text hier ein...",
+      "title": "Bionic Reading Konverter"
+    },
+    "contrastMeter": {
+      "title": "Farbkontrast-Checker",
+      "inputColors": "Eingabefarben",
+      "foreground": "Vordergrund",
+      "background": "Hintergrund",
+      "swapColors": "Farben tauschen",
+      "excellentContrast": "Hervorragender Kontrast",
+      "goodContrast": "Guter Kontrast",
+      "poorContrast": "Schlechter Kontrast",
+      "aaLarge": "AA · Großtext",
+      "aaText": "AA · Text",
+      "aaaNormal": "AAA · Text",
+      "aaaLarge": "AAA · Großtext",
+      "pass": "Bestanden",
+      "fail": "Fehlgeschlagen",
+      "calibrated": "Kalibriert nach WCAG 2.1"
+    },
+    "language": "Sprache"
+  }
+}

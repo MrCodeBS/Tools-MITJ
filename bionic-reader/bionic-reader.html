@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bionic Reading Converter</title>
+  <title>Bionic Reading Konverter</title>
+  <script src="../i18n.js"></script>
   <style>
     body, html {
       margin: 0;
@@ -83,12 +84,12 @@
 </head>
 <body>
   <div id="app">
-    <h1>Bionic Reading Converter</h1>
-    <textarea id="inputText" placeholder="Paste your text here..."></textarea>
+    <h1 data-i18n="bionic.title">Bionic Reading Konverter</h1>
+    <textarea id="inputText" data-i18n="bionic.placeholder" placeholder="Geben Sie Ihren Text hier ein..."></textarea>
     <div class="controls">
-      <button onclick="convertToBionic()">Convert to Bionic Reading</button>
-      <button onclick="toggleFullscreen()">Full Screen</button>
-      <button onclick="downloadPDF()">Download as PDF</button>
+      <button onclick="convertToBionic()" data-i18n="buttons.convertToBionic">In Bionic Reading umwandeln</button>
+      <button onclick="toggleFullscreen()" data-i18n="buttons.fullScreen">Vollbildmodus</button>
+      <button onclick="downloadPDF()" data-i18n="buttons.downloadPDF">Als PDF herunterladen</button>
     </div>
     <div id="fullscreen-view" class="bionic-output"></div>
   </div>
