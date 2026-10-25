@@ -297,8 +297,8 @@ window.addEventListener('load', async function() {
       return data.access === true;
     } catch (error) {
       console.error('Server validation error:', error);
-      // Fallback to client-side check if server unavailable
-      return Clerk.user?.publicMetadata?.paid === true;
+      // No fallback - deny access if server check fails
+      return false;
     }
   }
 
