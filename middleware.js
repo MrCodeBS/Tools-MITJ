@@ -28,16 +28,28 @@ function safeDecodeJWTPayload(token) {
     const payload = parts[1];
     if (!/^[A-Za-z0-9_-]+$/.test(payload)) return null;
     
-    // Decode base64url
-    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const decoded = atob(base64);
+    // Decode base64url - handle padding
+    let base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    // Add padding if needed
+    while (base64.length % 4) {
+      base64 += '=';
+    }
+    
+    // Use TextDecoder for Edge runtime compatibility
+    const binaryString = atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const decoded = new TextDecoder().decode(bytes);
     const parsed = JSON.parse(decoded);
     
     // Validate expected structure
     if (typeof parsed !== 'object' || parsed === null) return null;
     
     return parsed;
-  } catch {
+  } catch (e) {
+    console.error('[AUTH] JWT decode error:', e?.message);
     return null;
   }
 }
