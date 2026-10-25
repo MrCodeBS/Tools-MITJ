@@ -4,8 +4,8 @@
       "source": "/(.*)",
       "headers": [
         {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=31536000; includeSubDomains; preload"
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
         },
         {
           "key": "X-Content-Type-Options",
@@ -21,15 +21,11 @@
         },
         {
           "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=(), payment=()"
-        },
-        {
-          "key": "X-DNS-Prefetch-Control",
-          "value": "off"
+          "value": "camera=(), microphone=(), geolocation=()"
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' https://clerk.tools.my-it-journey.ch https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://clerk.tools.my-it-journey.ch; img-src 'self' data: https: blob:; font-src 'self' https://clerk.tools.my-it-journey.ch; connect-src 'self' https://clerk.tools.my-it-journey.ch https://api.clerk.com wss://clerk.tools.my-it-journey.ch; frame-src https://clerk.tools.my-it-journey.ch https://challenges.cloudflare.com; worker-src 'self' blob:; base-uri 'self'; form-action 'self' https://clerk.tools.my-it-journey.ch; frame-ancestors 'none'; upgrade-insecure-requests;"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.tools.my-it-journey.ch https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://clerk.tools.my-it-journey.ch; img-src 'self' data: https: blob:; font-src 'self' https://clerk.tools.my-it-journey.ch; connect-src 'self' https://clerk.tools.my-it-journey.ch https://api.clerk.com wss://clerk.tools.my-it-journey.ch; frame-src https://clerk.tools.my-it-journey.ch https://challenges.cloudflare.com; worker-src 'self' blob:;"
         }
       ]
     }
