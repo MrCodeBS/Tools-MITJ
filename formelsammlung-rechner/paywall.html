@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Premium erforderlich - Formelsammlung-Rechner</title>
+  <script defer crossorigin="anonymous" src="https://clerk.tools.my-it-journey.ch/npm/@clerk/ui@1/dist/ui.browser.js"></script>
+  <script defer crossorigin="anonymous" data-clerk-publishable-key="pk_live_Y2xlcmsudG9vbHMubXktaXQtam91cm5leS5jaCQ" src="https://clerk.tools.my-it-journey.ch/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #001155 0%, #1781e3 100%);
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+    }
+    .icon { font-size: 48px; margin-bottom: 16px; }
+    h1 { color: #001155; margin: 0 0 10px; font-size: 24px; }
+    .subtitle { color: #6b7385; margin: 0 0 8px; font-size: 15px; }
+    .price { color: #001155; font-size: 32px; font-weight: 700; margin: 0 0 24px; }
+    .price span { font-size: 14px; font-weight: 400; color: #6b7385; }
+    .buttons { display: flex; flex-direction: column; gap: 10px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 24px;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .btn-kofi { background: #FF5E5B; }
+    .btn-stripe { background: #635BFF; }
+    .btn-kofi:hover { background: #e54542; }
+    .btn-stripe:hover { background: #524acc; }
+    .note { color: #6b7385; font-size: 12px; margin: 16px 0 0; }
+    .signout {
+      margin-top: 16px;
+      padding: 10px 20px;
+      background: none;
+      color: #001155;
+      border: 1px solid #cdd5e3;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .signout:hover { background: #f5f7fa; }
+    .user-info {
+      margin-bottom: 20px;
+      padding: 12px;
+      background: #f5f7fa;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #6b7385;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">🔒</div>
+    <h1>Premium-Zugang erforderlich</h1>
+    <div id="user-info" class="user-info" style="display:none;"></div>
+    <p class="subtitle">Schalte alle 665+ Formeln frei für nur</p>
+    <p class="price">CHF 3.50<span>/Monat</span></p>
+    
+    <div class="buttons">
+      <a href="https://ko-fi.com/mrcode22" target="_blank" class="btn btn-kofi">☕ Mit Ko-fi abonnieren</a>
+      <a href="https://donate.stripe.com/fZu14o4krePKe7i1YEeAg00" target="_blank" class="btn btn-stripe">💳 Mit Karte zahlen</a>
+    </div>
+    
+    <p class="note">Nach der Zahlung wird dein Zugang innerhalb von 24h freigeschaltet.</p>
+    
+    <button class="signout" onclick="signOut()">Abmelden</button>
+  </div>
+
+  <script>
+    async function signOut() {
+      await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
+      await Clerk.signOut();
+      window.location.href = '/formelsammlung-rechner/login';
+    }
+    
+    window.addEventListener('load', async () => {
+      await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
+      if (Clerk.user) {
+        const userInfo = document.getElementById('user-info');
+        userInfo.style.display = 'block';
+        userInfo.textContent = `Eingeloggt als: ${Clerk.user.primaryEmailAddress?.emailAddress || Clerk.user.username}`;
+      }
+    });
+  </script>
+</body>
+</html>
