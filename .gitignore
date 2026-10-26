@@ -1,4 +1,21 @@
+# Environment variables - NEVER COMMIT
+.env
+.env.*
 .env.local
-.env.local
+.env.production
+.env.development
+
+# Vercel
 .vercel
-.env*
+
+# Dependencies
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
