@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login - Formelsammlung-Rechner</title>
+  <script defer crossorigin="anonymous" src="https://clerk.tools.my-it-journey.ch/npm/@clerk/clerk-js@6/dist/clerk.browser.js" data-clerk-publishable-key="pk_live_Y2xlcmsudG9vbHMubXktaXQtam91cm5leS5jaCQ"></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#001155,#1781e3);padding:20px}
+    .card{background:#fff;border-radius:16px;padding:32px;max-width:400px;width:100%;text-align:center;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4)}
+    h1{color:#001155;margin:0 0 8px;font-size:24px}
+    p{color:#6b7385;margin:0 0 24px}
+    #clerk-sign-in{min-height:300px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Formelsammlung-Rechner</h1>
+    <p>Melde dich an, um fortzufahren</p>
+    <div id="clerk-sign-in"></div>
+  </div>
+  <script>
+    window.addEventListener('load', async () => {
+      await Clerk.load();
+      if (Clerk.user) {
+        window.location.href = '/formelsammlung-rechner/Formelsammlung_Rechner.html';
+      } else {
+        Clerk.mountSignIn(document.getElementById('clerk-sign-in'), {
+          afterSignInUrl: '/formelsammlung-rechner/Formelsammlung_Rechner.html',
+          afterSignUpUrl: '/formelsammlung-rechner/Formelsammlung_Rechner.html',
+        });
+      }
+    });
+  </script>
+</body>
+</html>
